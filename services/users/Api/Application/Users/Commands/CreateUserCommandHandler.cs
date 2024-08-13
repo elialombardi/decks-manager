@@ -9,11 +9,8 @@ namespace Api.Features.Users.Commands
     public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
       var user = new User(Guid.NewGuid(),
-       request.UserID,
-       request.Name,
-       request.Description,
-       request.ImageUrl,
-       request.Cards.Select(c => new Card(Guid.NewGuid(), c.UserID, c.Name, c.Color, DateTime.UtcNow, DateTime.UtcNow, null)).ToList(),
+        request.UserName,
+        request.Email,
        DateTime.UtcNow,
        DateTime.UtcNow,
        null);

@@ -3,19 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using Api.Features.Users.Commands;
 using WebApi.Services;
 using Api.Application.Users.Queries;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers;
-
-public class UsersController(ILogger<UsersController> logger, ISender sender, IAuthService authService) : ControllerBase
+public class UsersController(ILogger<UsersController> logger, ISender sender) : ControllerBase
 {
 
   [HttpGet("{id}")]
+  [Authorize]
   public async Task<IActionResult> Get(string id)
   {
     try
     {
-
-      var user = await sender.Send(new GetUserByIdQuery(Guid.Parse(id), authService.GetUserId()));
+      var user = await sender.Send(new GetUserByIdQuery(Guid.Parse(id)));
       if (user == null)
       {
         return NotFound();
@@ -30,11 +30,12 @@ public class UsersController(ILogger<UsersController> logger, ISender sender, IA
   }
 
   [HttpPost("search")]
+  [Authorize]
   public async Task<IActionResult> Search(SearchUsersQuery command)
   {
     try
     {
-      var users = await sender.Send(command with { UserID = authService.GetUserId() });
+      var users = await sender.Send(command);
       return Ok(users);
     }
     catch (Exception ex)
@@ -45,11 +46,12 @@ public class UsersController(ILogger<UsersController> logger, ISender sender, IA
   }
 
   [HttpPost("")]
+  [Authorize]
   public async Task<ActionResult> Post(CreateUserCommand command)
   {
     try
     {
-      var id = await sender.Send(command with { UserID = authService.GetUserId() });
+      var id = await sender.Send(command);
       return Ok(id);
     }
     catch (Exception ex)
@@ -59,11 +61,12 @@ public class UsersController(ILogger<UsersController> logger, ISender sender, IA
     }
   }
   [HttpPut("")]
+  [Authorize]
   public async Task<ActionResult> Put(UpdateUserCommand command)
   {
     try
     {
-      var id = await sender.Send(command with { UserID = authService.GetUserId() });
+      var id = await sender.Send(command);
       return Ok(id);
     }
     catch (Exception ex)
@@ -74,11 +77,13 @@ public class UsersController(ILogger<UsersController> logger, ISender sender, IA
   }
 
   [HttpDelete("{id}")]
+  [Authorize(Roles = "admin")]
+  // [Authorize(Roles = "admin,manager")]
   public async Task<ActionResult> Post(string id)
   {
     try
     {
-      var deletedUserID = await sender.Send(new DeleteUserCommand(id, authService.GetUserId()));
+      var deletedUserID = await sender.Send(new DeleteUserCommand(id));
       return Ok(deletedUserID);
     }
     catch (Exception ex)

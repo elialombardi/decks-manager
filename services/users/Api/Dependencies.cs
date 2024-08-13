@@ -1,4 +1,7 @@
 
+using Api.Features.Users.Commands;
+using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +12,8 @@ public static class Dependencies
   {
     services
         .AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(Dependencies).Assembly));
-
+    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+    services.AddTransient<AbstractValidator<CreateUserCommand>, CreateUserCommandValidator>();
     return services;
   }
 }

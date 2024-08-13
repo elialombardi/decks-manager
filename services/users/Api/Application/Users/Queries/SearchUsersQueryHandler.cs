@@ -11,8 +11,8 @@ namespace Api.Application.Users.Queries
         {
             var query = context.Users.AsQueryable();
 
-            if (!string.IsNullOrEmpty(request.Name))
-                query = query.Where(p => p.Name.Contains(request.Name));
+            if (!string.IsNullOrEmpty(request.Username))
+                query = query.Where(p => p.Username.Contains(request.Username));
 
             return await query.ToListAsync(cancellationToken: cancellationToken);
         }

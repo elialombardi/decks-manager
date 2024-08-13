@@ -2,6 +2,8 @@
 
 # Define the directory
 DIRECTORY="users"
+RENAME_FROM="user"
+RENAME_TO="auth"
 
 # Function to replace 'deck' with 'users' while preserving the casing
 replace_case_sensitive() {
@@ -27,7 +29,7 @@ find "$DIRECTORY" -type f | while read -r file; do
     base=$(basename "$file")
     
     # Replace 'deck' with 'users' in the filename while preserving the casing
-    new_base=$(replace_case_sensitive "deck" "users" "$base")
+    new_base=$(replace_case_sensitive "$RENAME_FROM" "$RENAME_TO" "$base")
     
     # Rename the file
     mv "$file" "$dir/$new_base"

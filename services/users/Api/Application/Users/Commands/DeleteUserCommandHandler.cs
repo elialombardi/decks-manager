@@ -10,10 +10,9 @@ namespace Api.Features.Users.Commands
     {
 
       var user = await context.Users
-        .Include(d => d.Cards)
         .SingleOrDefaultAsync(d => d.UserID == Guid.Parse(request.UserID), cancellationToken);
 
-      if (user == null || user.UserID != request.UserID)
+      if (user == null)
       {
         return null;
       }
@@ -22,13 +21,6 @@ namespace Api.Features.Users.Commands
       {
         DeletedAt = DateTime.UtcNow
       };
-
-      // Soft delete cards
-      foreach (var card in updatedUser.Cards)
-      {
-        var updatedCard = card with { DeletedAt = DateTime.UtcNow };
-        context.Entry(updatedCard).State = EntityState.Modified;
-      }
 
       context.Entry(updatedUser).State = EntityState.Modified;
 

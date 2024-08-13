@@ -11,5 +11,4 @@ public class UsersDbContext : DbContext
   }
 
   public DbSet<User> Users { get; set; }
-  public DbSet<Card> Cards { get; set; }
 }
