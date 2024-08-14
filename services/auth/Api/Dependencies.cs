@@ -1,6 +1,8 @@
 
 using Api.Application.Common;
+using Api.Features.Auths.Commands;
 using Api.Proxies;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,13 +14,17 @@ public static class Dependencies
   public static IServiceCollection RegisterRequestHandlers(
       this IServiceCollection services, IConfiguration configuration)
   {
+
+    services.AddValidatorsFromAssembly(typeof(Dependencies).Assembly);
+
     services
         .AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(Dependencies).Assembly));
+
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
     services.AddHttpClient<IUserProxy, UserProxy>(client =>
     {
-      client.BaseAddress = new Uri(configuration.GetValue<string>("ApiBaseUrl") ?? string.Empty);
+      client.BaseAddress = new Uri(configuration.GetValue<string>("UserService:BaseAddress") ?? string.Empty);
     })
     .AddPolicyHandler(GetRetryPolicy())
     .AddPolicyHandler(GetCircuitBreakerPolicy());

@@ -3,12 +3,13 @@ using Api.Data;
 using Api.Data.Models;
 using Api.Application.Common;
 using Api.Proxies;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features.Auths.Commands
 {
-  public class CreateAuthCommandHandler(AuthDbContext context, IUserProxy userProxy) : IRequestHandler<CreateAuthCommand, Guid>
+  public class CreateAuthCommandHandler(AuthDbContext context, IUserProxy userProxy) : IRequestHandler<CreateAuthCommand, Auth>
   {
-    public async Task<Guid> Handle(CreateAuthCommand request, CancellationToken cancellationToken)
+    public async Task<Auth> Handle(CreateAuthCommand request, CancellationToken cancellationToken)
     {
       var userID = await userProxy.CreateUser(request.Email);
 
@@ -19,6 +20,7 @@ namespace Api.Features.Auths.Commands
       {
         AuthID = Guid.NewGuid(),
         UserID = userID,
+        RoleID = request.RoleID ?? Convert.ToByte(Roles.User),
         Email = request.Email,
         Password = HashPasswordHelper.HashPassword(request.Password),
         IsBlocked = false,
@@ -31,7 +33,9 @@ namespace Api.Features.Auths.Commands
 
       await context.SaveChangesAsync(cancellationToken);
 
-      return auth.AuthID;
+      auth.Role = await context.Roles.FirstAsync(r => r.RoleID == auth.RoleID, cancellationToken);
+
+      return auth;
     }
   }
 }

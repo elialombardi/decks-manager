@@ -16,9 +16,6 @@ namespace Api.Features.Auths.Commands
         .NotEmpty().EmailAddress().WithMessage("A valid email is required.")
         .MustAsync(BeUniqueEmail).WithMessage("Email must be unique.");
 
-      RuleFor(x => x.UserID)
-        .NotEmpty().WithMessage("UserID is required.");
-
       RuleFor(x => x.Password)
         .NotEmpty().WithMessage("Password is required.");
     }

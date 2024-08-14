@@ -1,6 +1,14 @@
-@WebApi_HostAddress = http://localhost:5205
+@WebApi_HostAddress = http://localhost:8080
+# @WebApi_HostAddress = http://localhost:5000
 
-GET {{WebApi_HostAddress}}/weatherforecast/
+GET {{WebApi_HostAddress}}/users/health
 Accept: application/json
 
+###
+
+POST {{WebApi_HostAddress}}/users
+Accept: application/json
+Content-Type: application/json
+
+{ "email": "myemail@mydomain.com" }
 ###

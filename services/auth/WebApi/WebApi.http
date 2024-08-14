@@ -1,6 +1,18 @@
 @WebApi_HostAddress = http://localhost:8080
 
-GET {{WebApi_HostAddress}}/users/health
+GET {{WebApi_HostAddress}}/auth/health
 Accept: application/json
 
+###
+
+GET {{WebApi_HostAddress}}/auth/roles
+Accept: application/json
+
+###
+
+POST {{WebApi_HostAddress}}/auth/signup
+Accept: application/json
+Content-Type: application/json
+
+{ "email": "myemail@mydomain2.com", "password": "HelloW0rld!"}
 ###

@@ -6,6 +6,8 @@ using Api.Application.Users.Queries;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers;
+
+[Route("[controller]")]
 public class UsersController(ILogger<UsersController> logger, ISender sender) : ControllerBase
 {
 
@@ -31,7 +33,7 @@ public class UsersController(ILogger<UsersController> logger, ISender sender) : 
 
   [HttpPost("search")]
   [Authorize]
-  public async Task<IActionResult> Search(SearchUsersQuery command)
+  public async Task<IActionResult> Search([FromBody] SearchUsersQuery command)
   {
     try
     {
@@ -46,13 +48,14 @@ public class UsersController(ILogger<UsersController> logger, ISender sender) : 
   }
 
   [HttpPost("")]
-  [Authorize(Roles = "microservice")]
-  public async Task<ActionResult> Post(CreateUserCommand command)
+  [Authorize]
+  // [Authorize(Roles = "microservice,admin")]
+  public async Task<ActionResult> Post([FromBody] CreateUserCommand command)
   {
     try
     {
-      var userID = await sender.Send(command);
-      return Ok(userID);
+      var user = await sender.Send(command);
+      return Ok(user);
     }
     catch (Exception ex)
     {
@@ -62,7 +65,7 @@ public class UsersController(ILogger<UsersController> logger, ISender sender) : 
   }
   [HttpPut("")]
   [Authorize]
-  public async Task<ActionResult> Put(UpdateUserCommand command)
+  public async Task<ActionResult> Put([FromBody] UpdateUserCommand command)
   {
     try
     {

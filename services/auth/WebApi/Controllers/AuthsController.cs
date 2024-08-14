@@ -1,94 +1,82 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Api.Features.Auths.Commands;
-using WebApi.Services;
-using Api.Application.Auths.Queries;
 using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics.CodeAnalysis;
+using WebApi.Services;
+using Api.Application.Common;
+using Api.Application.Roles.Queries;
 
 namespace WebApi.Controllers;
-public class AuthsController(ILogger<AuthsController> logger, ISender sender) : ControllerBase
+
+[Route("auth")]
+public class AuthsController(ILogger<AuthsController> logger, ISender sender, IAuthService authService) : ControllerBase
 {
 
-  [HttpGet("{id}")]
-  [Authorize]
-  public async Task<IActionResult> Get(string id)
+  [HttpPost("login")]
+  [AllowAnonymous]
+  public async Task<IActionResult> Login([FromBody] LoginCommand command)
   {
     try
     {
-      var auth = await sender.Send(new GetAuthByIdQuery(Guid.Parse(id)));
+      var auth = await sender.Send(command);
       if (auth == null)
       {
         return NotFound();
       }
-      return Ok(auth);
+      Response.Headers.Append("Authorization", $"Bearer {authService.GenerateJwtToken(auth.UserID, auth.Role.Name.ToLowerInvariant())}");
+
+      return Ok(new { auth.UserID, auth.Role.Name });
     }
     catch (Exception ex)
     {
-      logger.LogError(ex, "Error getting auth");
+      logger.LogError(ex, "Login error");
       return StatusCode(500);
     }
   }
 
-  [HttpPost("search")]
-  [Authorize]
-  public async Task<IActionResult> Search(SearchAuthsQuery command)
+  [HttpPost("signup")]
+  [AllowAnonymous]
+  public async Task<IActionResult> Signup([FromBody] CreateAuthCommand command)
   {
     try
     {
-      var auths = await sender.Send(command);
-      return Ok(auths);
+      // If is external user signin up, set role to user
+      if (HttpContext.User?.Identity == null || !HttpContext.User.Identity.IsAuthenticated || !HttpContext.User.IsInRole(Roles.Admin.ToString().ToLowerInvariant()))
+      {
+        command = command with { RoleID = Convert.ToByte(Roles.User) };
+      }
+
+      var auth = await sender.Send(command);
+      if (auth == null)
+      {
+        return NotFound();
+      }
+
+      Response.Headers.Append("Authorization", $"Bearer {authService.GenerateJwtToken(auth.UserID, auth.Role.Name.ToLowerInvariant())}");
+
+      return Ok(new { auth.UserID, auth.Role.Name });
     }
     catch (Exception ex)
     {
-      logger.LogError(ex, "Error getting auth");
+      logger.LogError(ex, "Login error");
       return StatusCode(500);
     }
   }
 
-  [HttpPost("")]
-  [Authorize]
-  public async Task<ActionResult> Post(CreateAuthCommand command)
+  [HttpGet("roles")]
+  [AllowAnonymous]
+  public async Task<IActionResult> GetRoles()
   {
     try
     {
-      var id = await sender.Send(command);
-      return Ok(id);
-    }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error creating auth");
-      return StatusCode(500);
-    }
-  }
-  [HttpPut("")]
-  [Authorize]
-  public async Task<ActionResult> Put(UpdateAuthCommand command)
-  {
-    try
-    {
-      var id = await sender.Send(command);
-      return Ok(id);
-    }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error creating auth");
-      return StatusCode(500);
-    }
-  }
+      var roles = await sender.Send(new SearchRolesQuery());
 
-  [HttpDelete("{id}")]
-  [Authorize(Roles = "admin")]
-  // [Authorize(Roles = "admin,manager")]
-  public async Task<ActionResult> Post(string id)
-  {
-    try
-    {
-      var deletedAuthID = await sender.Send(new DeleteAuthCommand(id));
-      return Ok(deletedAuthID);
+      return Ok(roles);
     }
     catch (Exception ex)
     {
-      logger.LogError(ex, "Error creating auth");
+      logger.LogError(ex, "Error getting roles");
       return StatusCode(500);
     }
   }

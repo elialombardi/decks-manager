@@ -4,9 +4,9 @@ using Api.Data.Models;
 
 namespace Api.Features.Users.Commands
 {
-  public class CreateUserCommandHandler(UsersDbContext context) : IRequestHandler<CreateUserCommand, Guid>
+  public class CreateUserCommandHandler(UsersDbContext context) : IRequestHandler<CreateUserCommand, User>
   {
-    public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<User> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
       var user = new User(Guid.NewGuid(),
         request.Username,
@@ -19,7 +19,7 @@ namespace Api.Features.Users.Commands
 
       await context.SaveChangesAsync(cancellationToken);
 
-      return user.UserID;
+      return user;
     }
   }
 }

@@ -11,17 +11,42 @@ namespace Api.Proxies
   {
     public string GenerateJwtToken()
     {
-      var tokenHandler = new JwtSecurityTokenHandler();
-      var key = Encoding.ASCII.GetBytes(configuration.GetValue<string>("JWT:SecretKey") ?? string.Empty);
+      var key = configuration.GetValue<string>("JWT:SecretKey") ?? string.Empty;
+      var issuer = configuration.GetValue<string>("JWT:Issuer") ?? string.Empty;
+      var audience = configuration.GetValue<string>("JWT:Audience") ?? string.Empty;
+
+      // var tokenHandler = new JwtSecurityTokenHandler();
+      // var key = Encoding.ASCII.GetBytes(key);
+      // var tokenDescriptor = new SecurityTokenDescriptor
+      // {
+      //   Subject = new ClaimsIdentity([new Claim(ClaimTypes.Role, "microservice")]),
+      //   Expires = DateTime.UtcNow.AddHours(1),
+      //   SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+      // };
+      // var token = tokenHandler.CreateToken(tokenDescriptor);
+      // return tokenHandler.WriteToken(token);
+
+      var handler = new JwtSecurityTokenHandler();
+
+      var privateKey = Encoding.UTF8.GetBytes(key);
+
+      var credentials = new SigningCredentials(
+          new SymmetricSecurityKey(privateKey),
+          SecurityAlgorithms.HmacSha256);
+
       var tokenDescriptor = new SecurityTokenDescriptor
       {
-        Subject = new ClaimsIdentity([new Claim("role", "microservice")]),
+        SigningCredentials = credentials,
         Expires = DateTime.UtcNow.AddHours(1),
-        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        Issuer = issuer,
+        Audience = audience,
+        Subject = new ClaimsIdentity([new Claim(ClaimTypes.Role, "microservice")])
       };
-      var token = tokenHandler.CreateToken(tokenDescriptor);
-      return tokenHandler.WriteToken(token);
+
+      var token = handler.CreateToken(tokenDescriptor);
+      return handler.WriteToken(token);
     }
+
 
   }
 }

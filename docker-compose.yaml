@@ -1,12 +1,16 @@
 x-common-variables: &common-variables
-  ASPNETCORE_ENVIRONMENT: Production
+  ASPNETCORE_ENVIRONMENT: Development
   rabbitMQ__username: guest
   rabbitMQ__password: guest
   rabbitMQ__host: rabbitmq
   rabbitMQ__virtualHost: /
   JWT__Issuer: https://deck-manager.local.com
   JWT__Audience: https://deck-manager.local.com
-  JWT__SecretKey: rD2COTAI&ix9FB66
+  # To generate JWT__SecretKey run openssl rand -base64 64
+  JWT__SecretKey: lqgruqLbLX79KEyCAbGt3Y+kAcT5DfE8zTgqxRb1e7E8Bzw6OnSBZbJ6XAsBNBRv1v0LIVVjDq+D5LQh2ABOCg==
+  auth__MaxLoginAttempts: 5
+  ApiBaseUrl: http://localhost:8080/
+  UserService__BaseAddress: http://users-api:8080
 
 services:
   # User Nginx as api gateway
@@ -21,6 +25,7 @@ services:
     restart: always
     depends_on:
       - users-api
+      - auth-api
       # - decks-api
       # - cards-api
       # - games-api
@@ -33,6 +38,20 @@ services:
       <<: *common-variables
     ports:
       - 5000:8080
+    networks:
+      - dm-network
+    depends_on:
+      - rabbitmq
+    restart: always
+
+  auth-api:
+    build:
+      context: services/auth
+      dockerfile: WebApi/Dockerfile
+    environment:
+      <<: *common-variables
+    ports:
+      - 5001:8080
     networks:
       - dm-network
     depends_on:

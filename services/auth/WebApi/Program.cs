@@ -20,18 +20,13 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 
 builder.Services.AddMassTransit(x =>
    {
-     //    x.UsingInMemory((context, cfg) =>
-     //     {
-     //         cfg.ConfigureEndpoints(context);
-     //     });
-
      x.UsingRabbitMq((context, cfg) =>
       {
         var configuration = context.GetRequiredService<IConfiguration>();
         cfg.Host(configuration.GetValue<string>("rabbitMQ:host"), configuration.GetValue<string>("rabbitMQ:virtualHost"), h =>
            {
-             h.Username("rabbitMQ:authname");
-             h.Password("rabbitMQ:password");
+             h.Username(configuration.GetValue<string?>("rabbitMQ:username") ?? string.Empty);
+             h.Password(configuration.GetValue<string?>("rabbitMQ:password") ?? string.Empty);
            });
       });
    });
@@ -53,9 +48,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       };
     });
 
+builder.Services.AddAuthorization();
+builder.Services.AddControllers();
 
 builder.Services.RegisterRequestHandlers(builder.Configuration);
 
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -67,6 +65,10 @@ if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();
   app.UseSwaggerUI();
+
+  using var scope = app.Services.CreateScope();
+  var context = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+  AuthDbContext.Initialize(context);
 }
 
 app.UseHttpsRedirection();
@@ -75,5 +77,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
 
 app.Run();
