@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Api.Features.Users.Commands
 {
-  public record CreateUserCommand(string UserName, string Email) : IRequest<Guid>;
+  public record CreateUserCommand(string Email, string? Username) : IRequest<Guid>;
 }

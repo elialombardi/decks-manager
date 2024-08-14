@@ -1,9 +1,6 @@
 using System.Text;
-using Api.Application.Users.Queries;
 using Api.Data;
-using Api.Features.Users.Commands;
 using MassTransit;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,9 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<UsersDbContext>(options =>
+builder.Services.AddDbContext<AuthDbContext>(options =>
 {
-  options.UseInMemoryDatabase("Users");
+  options.UseInMemoryDatabase("Auths");
 });
 
 builder.Services.AddMassTransit(x =>
@@ -33,8 +30,8 @@ builder.Services.AddMassTransit(x =>
         var configuration = context.GetRequiredService<IConfiguration>();
         cfg.Host(configuration.GetValue<string>("rabbitMQ:host"), configuration.GetValue<string>("rabbitMQ:virtualHost"), h =>
            {
-             h.Username(configuration.GetValue<string>("rabbitMQ:username") ?? string.Empty);
-             h.Password(configuration.GetValue<string>("rabbitMQ:password") ?? string.Empty);
+             h.Username("rabbitMQ:authname");
+             h.Password("rabbitMQ:password");
            });
       });
    });
@@ -56,8 +53,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       };
     });
 
-builder.Services.AddAuthorization();
-builder.Services.AddControllers();
 
 builder.Services.RegisterRequestHandlers(builder.Configuration);
 
@@ -75,8 +70,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseHealthChecks("/users/health");
 
 app.UseAuthentication();
 app.UseAuthorization();

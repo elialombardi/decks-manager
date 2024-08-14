@@ -9,7 +9,7 @@ namespace Api.Features.Users.Commands
     public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
       var user = new User(Guid.NewGuid(),
-        request.UserName,
+        request.Username,
         request.Email,
        DateTime.UtcNow,
        DateTime.UtcNow,

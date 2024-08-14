@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the directory
-DIRECTORY="users"
+DIRECTORY="auth"
 RENAME_FROM="user"
 RENAME_TO="auth"
 

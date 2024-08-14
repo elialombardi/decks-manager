@@ -1,12 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Api.Features.Users.Commands;
+using Api.Features.Auths.Commands;
 using WebApi.Services;
-using Api.Application.Users.Queries;
+using Api.Application.Auths.Queries;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebApi.Controllers;
-public class UsersController(ILogger<UsersController> logger, ISender sender) : ControllerBase
+public class AuthsController(ILogger<AuthsController> logger, ISender sender) : ControllerBase
 {
 
   [HttpGet("{id}")]
@@ -15,54 +15,39 @@ public class UsersController(ILogger<UsersController> logger, ISender sender) : 
   {
     try
     {
-      var user = await sender.Send(new GetUserByIdQuery(Guid.Parse(id)));
-      if (user == null)
+      var auth = await sender.Send(new GetAuthByIdQuery(Guid.Parse(id)));
+      if (auth == null)
       {
         return NotFound();
       }
-      return Ok(user);
+      return Ok(auth);
     }
     catch (Exception ex)
     {
-      logger.LogError(ex, "Error getting user");
+      logger.LogError(ex, "Error getting auth");
       return StatusCode(500);
     }
   }
 
   [HttpPost("search")]
   [Authorize]
-  public async Task<IActionResult> Search(SearchUsersQuery command)
+  public async Task<IActionResult> Search(SearchAuthsQuery command)
   {
     try
     {
-      var users = await sender.Send(command);
-      return Ok(users);
+      var auths = await sender.Send(command);
+      return Ok(auths);
     }
     catch (Exception ex)
     {
-      logger.LogError(ex, "Error getting user");
+      logger.LogError(ex, "Error getting auth");
       return StatusCode(500);
     }
   }
 
   [HttpPost("")]
-  [Authorize(Roles = "microservice")]
-  public async Task<ActionResult> Post(CreateUserCommand command)
-  {
-    try
-    {
-      var userID = await sender.Send(command);
-      return Ok(userID);
-    }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error creating user");
-      return StatusCode(500);
-    }
-  }
-  [HttpPut("")]
   [Authorize]
-  public async Task<ActionResult> Put(UpdateUserCommand command)
+  public async Task<ActionResult> Post(CreateAuthCommand command)
   {
     try
     {
@@ -71,7 +56,22 @@ public class UsersController(ILogger<UsersController> logger, ISender sender) : 
     }
     catch (Exception ex)
     {
-      logger.LogError(ex, "Error creating user");
+      logger.LogError(ex, "Error creating auth");
+      return StatusCode(500);
+    }
+  }
+  [HttpPut("")]
+  [Authorize]
+  public async Task<ActionResult> Put(UpdateAuthCommand command)
+  {
+    try
+    {
+      var id = await sender.Send(command);
+      return Ok(id);
+    }
+    catch (Exception ex)
+    {
+      logger.LogError(ex, "Error creating auth");
       return StatusCode(500);
     }
   }
@@ -83,12 +83,12 @@ public class UsersController(ILogger<UsersController> logger, ISender sender) : 
   {
     try
     {
-      var deletedUserID = await sender.Send(new DeleteUserCommand(id));
-      return Ok(deletedUserID);
+      var deletedAuthID = await sender.Send(new DeleteAuthCommand(id));
+      return Ok(deletedAuthID);
     }
     catch (Exception ex)
     {
-      logger.LogError(ex, "Error creating user");
+      logger.LogError(ex, "Error creating auth");
       return StatusCode(500);
     }
   }

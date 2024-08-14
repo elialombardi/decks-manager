@@ -1,4 +1,5 @@
 
+using Api.Application.Common;
 using Api.Features.Users.Commands;
 using FluentValidation;
 using MediatR;

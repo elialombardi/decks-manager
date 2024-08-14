@@ -1,0 +1,53 @@
+x-common-variables: &common-variables
+  ASPNETCORE_ENVIRONMENT: Production
+  rabbitMQ__username: guest
+  rabbitMQ__password: guest
+  rabbitMQ__host: rabbitmq
+  rabbitMQ__virtualHost: /
+  JWT__Issuer: https://deck-manager.local.com
+  JWT__Audience: https://deck-manager.local.com
+  JWT__SecretKey: rD2COTAI&ix9FB66
+
+services:
+  # User Nginx as api gateway
+  api-gateway:
+    build:
+      context: nginx-api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - 8080:80
+    networks:
+      - dm-network
+    restart: always
+    depends_on:
+      - users-api
+      # - decks-api
+      # - cards-api
+      # - games-api
+
+  users-api:
+    build:
+      context: services/users
+      dockerfile: WebApi/Dockerfile
+    environment:
+      <<: *common-variables
+    ports:
+      - 5000:8080
+    networks:
+      - dm-network
+    depends_on:
+      - rabbitmq
+    restart: always
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - dm-network
+    restart: always
+  
+networks:
+  dm-network:
+    driver: bridge

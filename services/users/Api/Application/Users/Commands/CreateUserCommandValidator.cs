@@ -12,7 +12,7 @@ namespace Api.Features.Users.Commands
     {
       _context = context;
 
-      RuleFor(x => x.UserName)
+      RuleFor(x => x.Username)
         .NotEmpty()
         .WithMessage("Username is required.")
         .MustAsync(BeUniqueUserName).WithMessage("Username must be unique.");
