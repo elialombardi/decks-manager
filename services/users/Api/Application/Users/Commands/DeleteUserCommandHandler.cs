@@ -1,12 +1,13 @@
 using MediatR;
 using Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Api.Data.Models;
 
 namespace Api.Features.Users.Commands
 {
-  public class DeleteUserCommandHandler(UsersDbContext context) : IRequestHandler<DeleteUserCommand, Guid?>
+  public class DeleteUserCommandHandler(UsersDbContext context) : IRequestHandler<DeleteUserCommand, User?>
   {
-    public async Task<Guid?> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    public async Task<User?> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
 
       var user = await context.Users
@@ -26,7 +27,7 @@ namespace Api.Features.Users.Commands
 
       await context.SaveChangesAsync(cancellationToken);
 
-      return user.UserID;
+      return user;
     }
   }
 }

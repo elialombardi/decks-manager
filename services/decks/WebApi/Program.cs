@@ -12,8 +12,6 @@ using WebApi.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -24,23 +22,16 @@ builder.Services.AddDbContext<DecksDbContext>(options =>
 
 builder.Services.AddMassTransit(x =>
    {
-     //    x.UsingInMemory((context, cfg) =>
-     //     {
-     //         cfg.ConfigureEndpoints(context);
-     //     });
-
      x.UsingRabbitMq((context, cfg) =>
       {
         var configuration = context.GetRequiredService<IConfiguration>();
         cfg.Host(configuration.GetValue<string>("rabbitMQ:host"), configuration.GetValue<string>("rabbitMQ:virtualHost"), h =>
            {
-             h.Username("rabbitMQ:username");
-             h.Password("rabbitMQ:password");
+             h.Username(configuration.GetValue<string?>("rabbitMQ:username") ?? string.Empty);
+             h.Password(configuration.GetValue<string?>("rabbitMQ:password") ?? string.Empty);
            });
       });
    });
-
-
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -57,7 +48,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
       };
     });
 
-builder.Service.AddAuthorization();
+builder.Services.AddAuthorization();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers(options =>
 {
@@ -72,7 +64,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();

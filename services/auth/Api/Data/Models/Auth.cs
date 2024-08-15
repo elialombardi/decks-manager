@@ -21,5 +21,3 @@ public class Auth
   public DateTime UpdatedAt { get; set; }
   public DateTime? DeletedAt { get; set; }
 }
-
-public record Role(byte RoleID, string Name);
