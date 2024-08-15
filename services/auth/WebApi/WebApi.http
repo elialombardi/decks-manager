@@ -16,3 +16,10 @@ Content-Type: application/json
 
 { "email": "myemail@mydomain2.com", "password": "HelloW0rld!"}
 ###
+
+POST {{WebApi_HostAddress}}/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{ "email": "myemail@mydomain2.com", "password": "HelloW0rld!"}
+###

@@ -12,3 +12,9 @@ Content-Type: application/json
 
 { "email": "myemail@mydomain.com" }
 ###
+
+GET {{WebApi_HostAddress}}/users/28a65099-b871-406e-a779-ae78d29eecd9
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoidXNlciIsIm5hbWVpZCI6IjI4YTY1MDk5LWI4NzEtNDA2ZS1hNzc5LWFlNzhkMjllZWNkOSIsIm5iZiI6MTcyMzcwMDg1NCwiZXhwIjoxNzIzNzA0NDU0LCJpYXQiOjE3MjM3MDA4NTQsImlzcyI6Imh0dHBzOi8vZGVjay1tYW5hZ2VyLmxvY2FsLmNvbSIsImF1ZCI6Imh0dHBzOi8vZGVjay1tYW5hZ2VyLmxvY2FsLmNvbSJ9.u6UTpbi3FO5xnw9o2IGOW4gBXnKr0XiMN5noD2CIrz8
+
+###

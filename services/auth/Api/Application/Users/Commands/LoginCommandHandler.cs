@@ -12,6 +12,7 @@ namespace Api.Features.Auths.Commands
     public async Task<Auth?> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
       var auth = await context.Auths
+        .Include(d => d.Role)
         .SingleOrDefaultAsync(d => d.Email == request.Email, cancellationToken);
 
       if (auth == null)
@@ -21,11 +22,7 @@ namespace Api.Features.Auths.Commands
 
       var result = HashPasswordHelper.VerifyHashedPassword(auth.Password, request.Password);
 
-      if (result == HashPasswordHelper.PasswordVerificationResult.SuccessRehashNeeded)
-      {
-        auth.Password = HashPasswordHelper.HashPassword(request.Password);
-      }
-      else if (result == HashPasswordHelper.PasswordVerificationResult.Failed)
+      if (result == HashPasswordHelper.PasswordVerificationResult.Failed)
       {
         if (auth.LoginAttempts >= configuration.GetValue<int>("auth:MaxLoginAttempts"))
         {
@@ -36,6 +33,11 @@ namespace Api.Features.Auths.Commands
       }
       else
       {
+        if (result == HashPasswordHelper.PasswordVerificationResult.SuccessRehashNeeded)
+        {
+          auth.Password = HashPasswordHelper.HashPassword(request.Password);
+        }
+
         auth.LoginAttempts = 0;
         auth.LastLoginDate = DateTime.UtcNow;
       }

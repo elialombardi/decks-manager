@@ -8,43 +8,39 @@ using Microsoft.AspNetCore.Authorization;
 namespace WebApi.Controllers;
 
 [Route("[controller]")]
-public class UsersController(ILogger<UsersController> logger, ISender sender) : ControllerBase
+public class UsersController(ILogger<UsersController> logger, ISender sender, IAuthService authService) : ControllerBase
 {
 
   [HttpGet("{id}")]
   [Authorize]
   public async Task<IActionResult> Get(string id)
   {
-    try
+    var user = await sender.Send(new GetUserByIdQuery(Guid.Parse(id)));
+    if (user == null)
     {
-      var user = await sender.Send(new GetUserByIdQuery(Guid.Parse(id)));
-      if (user == null)
-      {
-        return NotFound();
-      }
-      return Ok(user);
+      return NotFound();
     }
-    catch (Exception ex)
+    return Ok(user);
+  }
+
+  [HttpGet("current-user")]
+  [Authorize]
+  public async Task<IActionResult> GetCurrentUser(string id)
+  {
+    var user = await sender.Send(new GetUserByIdQuery(Guid.Parse(authService.GetUserId())));
+    if (user == null)
     {
-      logger.LogError(ex, "Error getting user");
-      return StatusCode(500);
+      return NotFound();
     }
+    return Ok(user);
   }
 
   [HttpPost("search")]
   [Authorize]
   public async Task<IActionResult> Search([FromBody] SearchUsersQuery command)
   {
-    try
-    {
-      var users = await sender.Send(command);
-      return Ok(users);
-    }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error getting user");
-      return StatusCode(500);
-    }
+    var users = await sender.Send(command);
+    return Ok(users);
   }
 
   [HttpPost("")]
@@ -52,31 +48,15 @@ public class UsersController(ILogger<UsersController> logger, ISender sender) : 
   // [Authorize(Roles = "microservice,admin")]
   public async Task<ActionResult> Post([FromBody] CreateUserCommand command)
   {
-    try
-    {
-      var user = await sender.Send(command);
-      return Ok(user);
-    }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error creating user");
-      return StatusCode(500);
-    }
+    var user = await sender.Send(command);
+    return Ok(user);
   }
   [HttpPut("")]
   [Authorize]
   public async Task<ActionResult> Put([FromBody] UpdateUserCommand command)
   {
-    try
-    {
-      var id = await sender.Send(command);
-      return Ok(id);
-    }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error creating user");
-      return StatusCode(500);
-    }
+    var id = await sender.Send(command);
+    return Ok(id);
   }
 
   [HttpDelete("{id}")]
@@ -84,15 +64,7 @@ public class UsersController(ILogger<UsersController> logger, ISender sender) : 
   // [Authorize(Roles = "admin,manager")]
   public async Task<ActionResult> Post(string id)
   {
-    try
-    {
-      var deletedUserID = await sender.Send(new DeleteUserCommand(id));
-      return Ok(deletedUserID);
-    }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error creating user");
-      return StatusCode(500);
-    }
+    var deletedUserID = await sender.Send(new DeleteUserCommand(id));
+    return Ok(deletedUserID);
   }
 }

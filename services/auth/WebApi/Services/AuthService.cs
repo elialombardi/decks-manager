@@ -23,18 +23,30 @@ namespace WebApi.Services
 
     public string GenerateJwtToken(string userID, string role)
     {
-      var tokenHandler = new JwtSecurityTokenHandler();
-      var key = Encoding.ASCII.GetBytes(configuration.GetValue<string>("JWT:SecretKey") ?? string.Empty);
+      var key = configuration.GetValue<string>("JWT:SecretKey") ?? string.Empty;
+      var issuer = configuration.GetValue<string>("JWT:Issuer") ?? string.Empty;
+      var audience = configuration.GetValue<string>("JWT:Audience") ?? string.Empty;
+
+      var handler = new JwtSecurityTokenHandler();
+
+      var privateKey = Encoding.UTF8.GetBytes(key);
+
+      var credentials = new SigningCredentials(
+          new SymmetricSecurityKey(privateKey),
+          SecurityAlgorithms.HmacSha256);
+
       var tokenDescriptor = new SecurityTokenDescriptor
       {
-        Subject = new ClaimsIdentity([new Claim(ClaimTypes.Role, role), new Claim(ClaimTypes.NameIdentifier, userID)]),
+        SigningCredentials = credentials,
         Expires = DateTime.UtcNow.AddHours(1),
-        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        Issuer = issuer,
+        Audience = audience,
+        Subject = new ClaimsIdentity([new Claim(ClaimTypes.Role, role), new Claim(ClaimTypes.NameIdentifier, userID)]),
       };
-      var token = tokenHandler.CreateToken(tokenDescriptor);
-      return tokenHandler.WriteToken(token);
+
+      var token = handler.CreateToken(tokenDescriptor);
+      return handler.WriteToken(token);
+
     }
-
-
   }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Services;
+using WebApi.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,8 +58,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Service.AddAuthorization();
-builder.Services.AddControllers();
 
+builder.Services.AddControllers(options =>
+{
+  options.Filters.Add<ValidationExceptionFilter>();
+});
 
 builder.Services.RegisterRequestHandlers(builder.Configuration);
 

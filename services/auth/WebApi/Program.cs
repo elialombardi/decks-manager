@@ -4,6 +4,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using WebApi.Filters;
 using WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
 {
-  options.UseInMemoryDatabase("Auths");
+  options.UseInMemoryDatabase("Auth");
 });
 
 builder.Services.AddMassTransit(x =>
@@ -49,7 +50,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddControllers();
+
+builder.Services.AddControllers(options =>
+{
+  options.Filters.Add<ValidationExceptionFilter>();
+});
 
 builder.Services.RegisterRequestHandlers(builder.Configuration);
 
@@ -77,7 +82,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
 
 app.Run();
