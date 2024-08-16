@@ -6,9 +6,8 @@ using MediatR;
 namespace Api.Application.Common
 {
 
-
   public class ValidationBehavior<TRequest, TResponse>(IValidator<TRequest>? validator = null) : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+  where TRequest : IRequest<TResponse>
   {
     private readonly IValidator<TRequest>? _validator = validator;
 

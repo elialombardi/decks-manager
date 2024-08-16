@@ -1,5 +1,6 @@
 
 using Api.Application.Common;
+using Api.Application.Users.Publishers;
 using Api.Features.Users.Commands;
 using FluentValidation;
 using MediatR;
@@ -15,6 +16,12 @@ public static class Dependencies
         .AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(Dependencies).Assembly));
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
     services.AddTransient<AbstractValidator<CreateUserCommand>, CreateUserCommandValidator>();
+
+    services.AddScoped<IUserPublisher, UserPublisher>();
+
+    // Add automapper profile
+    services.AddAutoMapper(typeof(Dependencies).Assembly);
+
     return services;
   }
 }

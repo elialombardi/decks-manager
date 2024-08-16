@@ -1,28 +1,33 @@
 using MediatR;
 using Api.Data;
 using Api.Data.Models;
+using Api.Application.Decks.Commands;
 
 namespace Api.Features.Decks.Commands
 {
-  public class CreateDeckCommandHandler(DecksDbContext context) : IRequestHandler<CreateDeckCommand, Guid>
+  public class CreateDeckCommandHandler(DecksDbContext context) : IRequestHandler<CreateDeckCommand, Deck?>
   {
-    public async Task<Guid> Handle(CreateDeckCommand request, CancellationToken cancellationToken)
+    public async Task<Deck?> Handle(CreateDeckCommand request, CancellationToken cancellationToken)
     {
-      var deck = new Deck(Guid.NewGuid(),
-       request.UserID,
-       request.Name,
-       request.Description,
-       request.ImageUrl,
-       request.Cards.Select(c => new Card(Guid.NewGuid(), c.DeckID, c.Name, c.Color, DateTime.UtcNow, DateTime.UtcNow, null)).ToList(),
-       DateTime.UtcNow,
-       DateTime.UtcNow,
-       null);
+      var deckID = Guid.NewGuid();
+      Deck deck = new()
+      {
+        DeckID = deckID,
+        UserID = request.UserID,
+        Name = request.Name,
+        Description = request.Description,
+        ImageUrl = request.ImageUrl,
+        Cards = request.Cards.Select(c => new DeckCard(c.CardID, deckID, DateTime.UtcNow, DateTime.UtcNow, null)).ToList(),
+        CreatedAt = DateTime.UtcNow,
+        UpdatedAt = DateTime.UtcNow,
+        DeletedAt = null
+      };
 
-      context.Decks.Add(deck);
+      await context.AddAsync(deck);
 
       await context.SaveChangesAsync(cancellationToken);
 
-      return deck.DeckID;
+      return deck;
     }
   }
 }

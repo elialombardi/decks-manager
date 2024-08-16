@@ -14,6 +14,15 @@ namespace Api.Application.Decks.Queries
             if (!string.IsNullOrEmpty(request.Name))
                 query = query.Where(p => p.Name.Contains(request.Name));
 
+            if (!string.IsNullOrEmpty(request.UserID))
+                query = query.Where(p => p.UserID == request.UserID);
+
+            if (request.Random)
+                query = query.OrderBy(_ => Guid.NewGuid());
+
+            if (request.Take.HasValue)
+                query = query.Take(request.Take.Value);
+
             return await query.ToListAsync(cancellationToken: cancellationToken);
         }
     }

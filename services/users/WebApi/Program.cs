@@ -1,9 +1,6 @@
 using System.Text;
-using Api.Application.Users.Queries;
 using Api.Data;
-using Api.Features.Users.Commands;
 using MassTransit;
-using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

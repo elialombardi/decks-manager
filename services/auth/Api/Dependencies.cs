@@ -1,5 +1,6 @@
 
 using Api.Application.Common;
+using Api.Application.Roles.Publishers;
 using Api.Features.Auths.Commands;
 using Api.Proxies;
 using FluentValidation;
@@ -21,6 +22,10 @@ public static class Dependencies
         .AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(Dependencies).Assembly));
 
     services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+    services.AddAutoMapper(typeof(Dependencies).Assembly);
+
+    services.AddScoped<IRolePublisher, RolePublisher>();
 
     services.AddHttpClient<IUserProxy, UserProxy>(client =>
     {

@@ -11,6 +11,10 @@ x-common-variables: &common-variables
   auth__MaxLoginAttempts: 5
   ApiBaseUrl: http://localhost:8080/
   UserService__BaseAddress: http://users-api:8080
+  massTransit__usersQueueName: users-queue
+  Logging__LogLevel__Api: Debug
+  Logging__LogLevel__WebApi: Debug
+  Logging__LogLevel__MassTransit: Debug
 
 services:
   # User Nginx as api gateway
@@ -56,6 +60,35 @@ services:
       - dm-network
     depends_on:
       - rabbitmq
+    restart: always
+
+  # decks-api:
+  #   build:
+  #     context: services/decks
+  #     dockerfile: WebApi/Dockerfile
+  #   environment:
+  #     <<: *common-variables
+  #   ports:
+  #     - 5002:8080
+  #   networks:
+  #     - dm-network
+  #   depends_on:
+  #     - rabbitmq
+  #   restart: always
+
+  decks-console-app:
+    build:
+      context: services/decks
+      dockerfile: ConsoleApp/Dockerfile
+    environment:
+      <<: *common-variables
+    networks:
+      - dm-network
+    depends_on:
+      - rabbitmq
+    volumes:
+    # mount files folder
+      - ./files:/app/files
     restart: always
   
   rabbitmq:

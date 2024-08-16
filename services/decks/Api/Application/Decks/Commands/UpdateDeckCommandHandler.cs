@@ -11,7 +11,7 @@ namespace Api.Features.Decks.Commands
     {
       var deck = await context.Decks
         .Include(d => d.Cards)
-        .SingleOrDefaultAsync(d => d.DeckID == Guid.Parse(request.DeckID), cancellationToken);
+        .SingleOrDefaultAsync(d => d.DeckID == request.DeckID, cancellationToken);
 
       if (deck == null || deck.UserID != request.UserID)
       {
@@ -21,19 +21,17 @@ namespace Api.Features.Decks.Commands
       // Add or update cards
       var updatedCards = request.Cards.Select(async c =>
       {
-        var card = deck.Cards.SingleOrDefault(deckCard => deckCard.CardID == Guid.Parse(c.CardID));
+        var card = deck.Cards.SingleOrDefault(deckCard => deckCard.CardID == c.CardID);
         if (card == null)
         {
-          card = new Card(Guid.NewGuid(), c.DeckID, c.Name, c.Color, DateTime.UtcNow, DateTime.UtcNow, null);
-          await context.Cards.AddAsync(card, cancellationToken);
+          card = new DeckCard(c.CardID, c.DeckID, DateTime.UtcNow, DateTime.UtcNow, null);
+          await context.AddAsync(card, cancellationToken);
 
           return card;
         }
 
         return card with
         {
-          Name = c.Name,
-          Color = c.Color,
           UpdatedAt = DateTime.UtcNow
         };
       });

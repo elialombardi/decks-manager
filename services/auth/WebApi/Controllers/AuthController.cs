@@ -6,11 +6,12 @@ using System.Diagnostics.CodeAnalysis;
 using WebApi.Services;
 using Api.Application.Common;
 using Api.Application.Roles.Queries;
+using Api.Application.Roles.Publishers;
 
 namespace WebApi.Controllers;
 
 [Route("auth")]
-public class AuthController(ILogger<AuthController> logger, ISender sender, IAuthService authService) : ControllerBase
+public class AuthController(ILogger<AuthController> logger, ISender sender, IAuthService authService, IRolePublisher rolePublisher) : ControllerBase
 {
 
   [HttpPost("login")]
@@ -58,5 +59,16 @@ public class AuthController(ILogger<AuthController> logger, ISender sender, IAut
     var roles = await sender.Send(new SearchRolesQuery());
 
     return Ok(roles);
+  }
+
+  [HttpPost("roles")]
+  [AllowAnonymous]
+  public async Task<IActionResult> PostRole()
+  {
+    var role = new Api.Data.Models.Role(4, "Test");
+
+    await rolePublisher.Publish(role);
+
+    return Ok(role);
   }
 }

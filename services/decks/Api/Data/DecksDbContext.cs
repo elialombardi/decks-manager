@@ -12,4 +12,6 @@ public class DecksDbContext : DbContext
 
   public DbSet<Deck> Decks { get; set; }
   public DbSet<Card> Cards { get; set; }
+  public DbSet<DeckCard> DeckCards { get; set; }
+  public DbSet<CardColor> CardColors { get; set; }
 }
