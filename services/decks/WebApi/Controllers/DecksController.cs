@@ -7,6 +7,7 @@ using Api.Application.Decks.Commands;
 
 namespace WebApi.Controllers;
 
+[Route("[controller]")]
 public class DecksController(ILogger<DecksController> logger, ISender sender, IAuthService authService) : ControllerBase
 {
 
@@ -31,7 +32,7 @@ public class DecksController(ILogger<DecksController> logger, ISender sender, IA
   }
 
   [HttpPost("search")]
-  public async Task<IActionResult> Search(SearchDecksQuery command)
+  public async Task<IActionResult> Search([FromBody] SearchDecksQuery command)
   {
     try
     {
@@ -46,7 +47,7 @@ public class DecksController(ILogger<DecksController> logger, ISender sender, IA
   }
 
   [HttpPost("")]
-  public async Task<ActionResult> Post(CreateDeckCommand command)
+  public async Task<ActionResult> Post([FromBody] CreateDeckCommand command)
   {
     try
     {
@@ -60,7 +61,7 @@ public class DecksController(ILogger<DecksController> logger, ISender sender, IA
     }
   }
   [HttpPut("")]
-  public async Task<ActionResult> Put(UpdateDeckCommand command)
+  public async Task<ActionResult> Put([FromBody] UpdateDeckCommand command)
   {
     try
     {
@@ -75,7 +76,7 @@ public class DecksController(ILogger<DecksController> logger, ISender sender, IA
   }
 
   [HttpDelete("{id}")]
-  public async Task<ActionResult> Post(string id)
+  public async Task<ActionResult> Delete(string id)
   {
     try
     {

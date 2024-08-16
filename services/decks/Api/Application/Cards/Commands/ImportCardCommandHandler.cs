@@ -17,7 +17,18 @@ namespace Api.Application.Cards.Commands
       }
       else
       {
-        card = new Card(Guid.NewGuid(), request.ExternalCardID, request.Name, [], [], null, DateTime.UtcNow, DateTime.UtcNow, null);
+        card = new Card()
+        {
+          CardID = Guid.NewGuid(),
+          ExternalCardID = request.ExternalCardID,
+          Name = request.Name,
+          Colors = [],
+          Decks = [],
+          ImageUrl = null,
+          CreatedAt = DateTime.UtcNow,
+          UpdatedAt = DateTime.UtcNow,
+          DeletedAt = null
+        };
 
         await context.Cards.AddAsync(card, cancellationToken);
 

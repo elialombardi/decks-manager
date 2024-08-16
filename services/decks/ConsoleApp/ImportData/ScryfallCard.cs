@@ -64,59 +64,59 @@ namespace ConsoleApp.ImportData
   public class ScryfallCard
   {
     public required string Id { get; set; }
-    public required string Oracle_id { get; set; }
-    public required List<object> Multiverse_ids { get; set; }
-    public int Tcgplayer_id { get; set; }
+    // public required string Oracle_id { get; set; }
+    // public required List<object> Multiverse_ids { get; set; }
+    // public int Tcgplayer_id { get; set; }
     public required string Name { get; set; }
-    public required string Lang { get; set; }
-    public required string Released_at { get; set; }
-    public required string Uri { get; set; }
-    public required string Scryfall_uri { get; set; }
-    public required string Layout { get; set; }
-    public bool Highres_image { get; set; }
-    public required string Image_status { get; set; }
-    public required ImageUris Image_uris { get; set; }
-    public required string Mana_cost { get; set; }
-    public double Cmc { get; set; }
-    public required string Type_line { get; set; }
-    public required string Oracle_text { get; set; }
-    public required List<object> Colors { get; set; }
-    public required List<object> Color_identity { get; set; }
-    public required List<object> Keywords { get; set; }
+    // public required string Lang { get; set; }
+    // public required string Released_at { get; set; }
+    // public required string Uri { get; set; }
+    // public required string Scryfall_uri { get; set; }
+    // public required string Layout { get; set; }
+    // public bool Highres_image { get; set; }
+    // public required string Image_status { get; set; }
+    // public required ImageUris? Image_uris { get; set; }
+    // public string? Mana_cost { get; set; }
+    // public double Cmc { get; set; }
+    // public required string Type_line { get; set; }
+    // public required string Oracle_text { get; set; }
+    // public required List<object> Colors { get; set; }
+    // public required List<object> Color_identity { get; set; }
+    // public required List<object> Keywords { get; set; }
     // public Legalities? Legalities { get; set; }
-    public required List<string> Games { get; set; }
-    public bool Reserved { get; set; }
-    public bool Foil { get; set; }
-    public bool Nonfoil { get; set; }
-    public required List<string> Finishes { get; set; }
-    public bool Oversized { get; set; }
-    public bool Promo { get; set; }
-    public bool Reprint { get; set; }
-    public bool Variation { get; set; }
-    public required string Set_id { get; set; }
-    public required string Set { get; set; }
-    public required string Set_name { get; set; }
-    public required string Set_type { get; set; }
-    public required string Set_uri { get; set; }
-    public required string Set_search_uri { get; set; }
-    public required string Scryfall_set_uri { get; set; }
-    public required string Rulings_uri { get; set; }
-    public required string Prints_search_uri { get; set; }
-    public required string Collector_number { get; set; }
-    public bool Digital { get; set; }
-    public required string Rarity { get; set; }
-    public required string Flavor_text { get; set; }
-    public required string Card_back_id { get; set; }
-    public required string Artist { get; set; }
-    public required List<string> Artist_ids { get; set; }
-    public required string Illustration_id { get; set; }
-    public required string Border_color { get; set; }
-    public required string Frame { get; set; }
-    public bool Full_art { get; set; }
-    public bool Textless { get; set; }
-    public bool Booster { get; set; }
-    public bool Story_spotlight { get; set; }
-    public int Edhrec_rank { get; set; }
+    // public required List<string> Games { get; set; }
+    // public bool Reserved { get; set; }
+    // public bool Foil { get; set; }
+    // public bool Nonfoil { get; set; }
+    // public required List<string> Finishes { get; set; }
+    // public bool Oversized { get; set; }
+    // public bool Promo { get; set; }
+    // public bool Reprint { get; set; }
+    // public bool Variation { get; set; }
+    // public required string Set_id { get; set; }
+    // public required string Set { get; set; }
+    // public required string Set_name { get; set; }
+    // public required string Set_type { get; set; }
+    // public required string Set_uri { get; set; }
+    // public required string Set_search_uri { get; set; }
+    // public required string Scryfall_set_uri { get; set; }
+    // public required string Rulings_uri { get; set; }
+    // public required string Prints_search_uri { get; set; }
+    // public required string Collector_number { get; set; }
+    // public bool Digital { get; set; }
+    // public required string Rarity { get; set; }
+    // public required string Flavor_text { get; set; }
+    // public required string Card_back_id { get; set; }
+    // public required string Artist { get; set; }
+    // public required List<string> Artist_ids { get; set; }
+    // public required string Illustration_id { get; set; }
+    // public required string Border_color { get; set; }
+    // public required string Frame { get; set; }
+    // public bool Full_art { get; set; }
+    // public bool Textless { get; set; }
+    // public bool Booster { get; set; }
+    // public bool Story_spotlight { get; set; }
+    // public int Edhrec_rank { get; set; }
     // public Prices? Prices { get; set; }
     // public RelatedUris? Related_uris { get; set; }
     // public PurchaseUris? Purchase_uris { get; set; }

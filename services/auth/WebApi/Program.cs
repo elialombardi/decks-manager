@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using Api.Data;
 using MassTransit;
@@ -14,7 +15,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
 {
-  options.UseInMemoryDatabase("Auth");
+  // options.UseInMemoryDatabase("Decks");
+  // Use postgresql
+  var connectionString = builder.Configuration.GetConnectionString("auth");
+  options.UseNpgsql(connectionString, m =>
+  {
+    m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+    m.MigrationsHistoryTable($"__{nameof(AuthDbContext)}");
+  });
 });
 
 builder.Services.AddMassTransit(x =>
@@ -64,14 +72,26 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+static void ApplyMigrations(IHost host)
+{
+  // Log.Logger.Information("Applying migrations");
+  using var scope = host.Services.CreateScope();
+  var services = scope.ServiceProvider;
+  var context = services.GetRequiredService<AuthDbContext>();
+  context.Database.Migrate();
+
+  AuthDbContext.Initialize(context);
+
+  // Log.Logger.Information("Migrations applied");
+}
+
 if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();
   app.UseSwaggerUI();
 
-  using var scope = app.Services.CreateScope();
-  var context = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
-  AuthDbContext.Initialize(context);
+  ApplyMigrations(app);
+
 }
 
 app.UseHttpsRedirection();

@@ -17,7 +17,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DecksDbContext>(options =>
 {
-  options.UseInMemoryDatabase("Decks");
+  options.UseNpgsql(builder.Configuration.GetConnectionString("decks"));
 });
 
 builder.Services.AddMassTransit(x =>

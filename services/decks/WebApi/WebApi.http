@@ -1,6 +1,14 @@
-@WebApi_HostAddress = http://localhost:5205
+@WebApi_HostAddress = http://localhost:8080
 
 GET {{WebApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
+###
+
+POST {{WebApi_HostAddress}}/decks/search
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoidXNlciIsIm5hbWVpZCI6IjhkOGUzZjNhLTU1NDAtNDg2YS1iNzVjLTg1ZGExYjQyMDJhZSIsIm5iZiI6MTcyMzgyNTY3OSwiZXhwIjoxNzIzODI5Mjc5LCJpYXQiOjE3MjM4MjU2NzksImlzcyI6Imh0dHBzOi8vZGVjay1tYW5hZ2VyLmxvY2FsLmNvbSIsImF1ZCI6Imh0dHBzOi8vZGVjay1tYW5hZ2VyLmxvY2FsLmNvbSJ9.jtWmR2HyYbfjbuTuNbNwgK0sYO3axVKlygumgiSyFus
+
+{ "userID": "b007e14d-fac4-42ee-b494-8b50bf02910a"}
 ###

@@ -10,6 +10,17 @@ public class DecksDbContext : DbContext
   {
   }
 
+  protected override void OnModelCreating(ModelBuilder modelBuilder)
+  {
+    modelBuilder.Entity<CardColor>()
+      .HasKey(c => new { c.CardID, c.Color });
+
+    modelBuilder.Entity<DeckCard>()
+      .HasKey(c => new { c.DeckID, c.CardID });
+
+  }
+
+
   public DbSet<Deck> Decks { get; set; }
   public DbSet<Card> Cards { get; set; }
   public DbSet<DeckCard> DeckCards { get; set; }

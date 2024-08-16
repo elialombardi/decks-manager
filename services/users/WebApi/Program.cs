@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Services;
 using WebApi.Filters;
+using System.Reflection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +18,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<UsersDbContext>(options =>
 {
-  options.UseInMemoryDatabase("Users");
+  // options.UseInMemoryDatabase("Decks");
+  // Use postgresql
+  var connectionString = builder.Configuration.GetConnectionString("users");
+  options.UseNpgsql(connectionString, m =>
+  {
+    m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+    m.MigrationsHistoryTable($"__{nameof(UsersDbContext)}");
+  });
 });
 
 builder.Services.AddMassTransit(x =>
@@ -72,10 +81,23 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+static void ApplyMigrations(IHost host)
+{
+  // Log.Logger.Information("Applying migrations");
+  using var scope = host.Services.CreateScope();
+  var services = scope.ServiceProvider;
+  var context = services.GetRequiredService<UsersDbContext>();
+  context.Database.Migrate();
+  // Log.Logger.Information("Migrations applied");
+}
+
 if (app.Environment.IsDevelopment())
 {
   app.UseSwagger();
   app.UseSwaggerUI();
+
+  ApplyMigrations(app);
+
 }
 
 app.UseHttpsRedirection();

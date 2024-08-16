@@ -15,6 +15,9 @@ x-common-variables: &common-variables
   Logging__LogLevel__Api: Debug
   Logging__LogLevel__WebApi: Debug
   Logging__LogLevel__MassTransit: Debug
+  ConnectionStrings__decks: Host=postgresql;Port=5432;Database=decks;Username=postgres;Password=postgres
+  ConnectionStrings__users: Host=postgresql;Port=5432;Database=users;Username=postgres;Password=postgres
+  ConnectionStrings__auth: Host=postgresql;Port=5432;Database=auth;Username=postgres;Password=postgres
 
 services:
   # User Nginx as api gateway
@@ -40,8 +43,6 @@ services:
       dockerfile: WebApi/Dockerfile
     environment:
       <<: *common-variables
-    ports:
-      - 5000:8080
     networks:
       - dm-network
     depends_on:
@@ -54,27 +55,23 @@ services:
       dockerfile: WebApi/Dockerfile
     environment:
       <<: *common-variables
-    ports:
-      - 5001:8080
     networks:
       - dm-network
     depends_on:
       - rabbitmq
     restart: always
 
-  # decks-api:
-  #   build:
-  #     context: services/decks
-  #     dockerfile: WebApi/Dockerfile
-  #   environment:
-  #     <<: *common-variables
-  #   ports:
-  #     - 5002:8080
-  #   networks:
-  #     - dm-network
-  #   depends_on:
-  #     - rabbitmq
-  #   restart: always
+  decks-api:
+    build:
+      context: services/decks
+      dockerfile: WebApi/Dockerfile
+    environment:
+      <<: *common-variables
+    networks:
+      - dm-network
+    depends_on:
+      - rabbitmq
+    restart: always
 
   decks-console-app:
     build:
@@ -86,6 +83,7 @@ services:
       - dm-network
     depends_on:
       - rabbitmq
+      - postgresql
     volumes:
     # mount files folder
       - ./files:/app/files
@@ -98,6 +96,23 @@ services:
       - 15672:15672
     networks:
       - dm-network
+    restart: always
+
+  postgresql:
+    image: postgres:12
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: deck-manager
+    shm_size: 128mb
+      
+    ports:
+      - 5432:5432
+    networks:
+      - dm-network
+    volumes:
+      - /var/lib/postgresql/data
+      - ./pgsql:/docker-entrypoint-initdb.d
     restart: always
   
 networks:

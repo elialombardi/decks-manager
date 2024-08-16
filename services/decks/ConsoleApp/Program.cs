@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +10,11 @@ using NSwag;
 using Serilog;
 using Serilog.Events;
 using ConsoleApp.Consumers;
-using MassTransit.Transports.Fabric;
+using Api.Data;
+using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL;
+using ConsoleApp.Workers;
+using System.Reflection;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -26,7 +29,24 @@ Log.Logger = new LoggerConfiguration()
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<DecksDbContext>(options =>
+{
+  // options.UseInMemoryDatabase("Decks");
+  // Use postgresql
+  var connectionString = builder.Configuration.GetConnectionString("decks");
+  options.UseNpgsql(connectionString, m =>
+  {
+    m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+    m.MigrationsHistoryTable($"__{nameof(DecksDbContext)}");
+  });
+});
+
+
+
 builder.Host.UseSerilog();
+
+builder.Services.RegisterRequestHandlers(builder.Configuration);
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
@@ -60,7 +80,6 @@ builder.Services.AddMassTransit(x =>
   x.AddDelayedMessageScheduler();
 
   x.AddConsumer<UsersConsumer>();
-  x.AddConsumer<PipposConsumer>();
   // x.SetJobConsumerOptions();
   // x.AddJobSagaStateMachines(options => options.FinalizeCompleted = false)
   //     .EntityFrameworkRepository(r =>
@@ -110,10 +129,28 @@ builder.Services.AddMassTransit(x =>
 // builder.Services.AddOptions<HostOptions>()
 //     .Configure(options => options.ShutdownTimeout = TimeSpan.FromMinutes(1));
 
+builder.Services.AddHostedService<Worker>();
+
+
+
 var app = builder.Build();
 
+
+static void ApplyMigrations(IHost host)
+{
+  Log.Logger.Information("Applying migrations");
+  using var scope = host.Services.CreateScope();
+  var services = scope.ServiceProvider;
+  var context = services.GetRequiredService<DecksDbContext>();
+  context.Database.Migrate();
+  Log.Logger.Information("Migrations applied");
+}
+
 if (app.Environment.IsDevelopment())
+{
   app.UseDeveloperExceptionPage();
+  ApplyMigrations(app);
+}
 
 app.UseOpenApi();
 app.UseSwaggerUi();
@@ -139,3 +176,5 @@ app.MapHealthChecks("/health/live", new HealthCheckOptions { ResponseWriter = He
 app.MapControllers();
 
 await app.RunAsync();
+
+
