@@ -11,7 +11,7 @@ using Api.Application.Roles.Publishers;
 namespace WebApi.Controllers;
 
 [Route("auth")]
-public class AuthController(ILogger<AuthController> logger, ISender sender, IAuthService authService, IRolePublisher rolePublisher) : ControllerBase
+public class AuthController(ILogger<AuthController> logger, ISender sender, IAuthService authService, IRolePublisher rolePublisher, IConfiguration configuration) : ControllerBase
 {
 
   [HttpPost("login")]
@@ -70,5 +70,26 @@ public class AuthController(ILogger<AuthController> logger, ISender sender, IAut
     await rolePublisher.Publish(role);
 
     return Ok(role);
+  }
+
+  [HttpPost("admin")]
+  [AllowAnonymous]
+  public async Task<IActionResult> CreateAdmin()
+  {
+    // If is development environment, create admin user
+    if (configuration["ASPNETCORE_ENVIRONMENT"] != "Development")
+    {
+      return NotFound();
+    }
+
+    var auth = await sender.Send(new CreateAuthCommand("elia.lombardi@outlook.it", "Test.123", Convert.ToByte(Roles.Admin)));
+    if (auth == null)
+    {
+      return NotFound();
+    }
+
+    Response.Headers.Append("Authorization", $"Bearer {authService.GenerateJwtToken(auth.UserID, auth.Role.Name.ToLowerInvariant())}");
+
+    return Ok(auth);
   }
 }
