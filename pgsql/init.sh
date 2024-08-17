@@ -15,6 +15,10 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
 	CREATE DATABASE auth;
   \c auth;
   CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+	CREATE DATABASE subscribers;
+  \c subscribers;
+  CREATE EXTENSION IF NOT EXISTS "pgcrypto";
   
 	-- GRANT ALL PRIVILEGES ON DATABASE decks TO docker;
 	-- GRANT ALL PRIVILEGES ON DATABASE users TO docker;

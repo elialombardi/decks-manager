@@ -28,14 +28,14 @@ Log.Logger = new LoggerConfiguration()
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<EmailDbContext>(options =>
+builder.Services.AddDbContext<SubscribersDbContext>(options =>
 {
-  var connectionString = builder.Configuration.GetConnectionString("decks");
-  options.UseNpgsql(connectionString, m =>
+  options.UseNpgsql(builder.Configuration.GetConnectionString("subscribers"), m =>
   {
     m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
-    m.MigrationsHistoryTable($"__{nameof(EmailDbContext)}");
-  });
+    m.MigrationsHistoryTable($"__{nameof(SubscribersDbContext)}");
+  })
+  .UseSnakeCaseNamingConvention();
 });
 
 builder.Host.UseSerilog();
@@ -56,7 +56,7 @@ builder.Services.AddMassTransit(x =>
   x.AddSagaStateMachine<NewsletterOnboardingSaga, NewsletterOnboardingSagaData>()
       .EntityFrameworkRepository(r =>
       {
-        r.ExistingDbContext<EmailDbContext>();
+        r.ExistingDbContext<SubscribersDbContext>();
         r.UsePostgres();
       });
 
@@ -84,7 +84,7 @@ static void ApplyMigrations(IHost host)
   Log.Logger.Information("Applying migrations");
   using var scope = host.Services.CreateScope();
   var services = scope.ServiceProvider;
-  var context = services.GetRequiredService<EmailDbContext>();
+  var context = services.GetRequiredService<SubscribersDbContext>();
   context.Database.Migrate();
   Log.Logger.Information("Migrations applied");
 }

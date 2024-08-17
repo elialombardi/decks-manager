@@ -3,18 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features
 {
-  public class EmailDbContext : DbContext
+  public class SubscribersDbContext(DbContextOptions<SubscribersDbContext> options) : DbContext(options)
   {
-    public EmailDbContext(DbContextOptions<EmailDbContext> options) : base(options)
-    {
-    }
-
-    public override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.Entity<NewsletterOnboardingSagaData>(e =>
-      {
-        e.HasKey(x => x.CorrelationId);
-      });
+       {
+         e.HasKey(x => x.CorrelationId);
+       });
     }
 
     public DbSet<Subscriber.Models.Subscriber> Subscribers { get; set; }

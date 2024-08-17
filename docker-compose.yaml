@@ -18,6 +18,7 @@ x-common-variables: &common-variables
   ConnectionStrings__decks: Host=postgresql;Port=5432;Database=decks;Username=postgres;Password=postgres
   ConnectionStrings__users: Host=postgresql;Port=5432;Database=users;Username=postgres;Password=postgres
   ConnectionStrings__auth: Host=postgresql;Port=5432;Database=auth;Username=postgres;Password=postgres
+  ConnectionStrings__subscribers: Host=postgresql;Port=5432;Database=subscribers;Username=postgres;Password=postgres
 
 services:
   # User Nginx as api gateway
@@ -31,15 +32,67 @@ services:
       - dm-network
     restart: always
     depends_on:
-      - users-api
-      - auth-api
+      # - users-api
+      # - auth-api
       # - decks-api
-      # - cards-api
+      - subscribers-api
       # - games-api
 
-  users-api:
+  # users-api:
+  #   build:
+  #     context: services/users
+  #     dockerfile: WebApi/Dockerfile
+  #   environment:
+  #     <<: *common-variables
+  #   networks:
+  #     - dm-network
+  #   depends_on:
+  #     - rabbitmq
+  #   restart: always
+
+  # auth-api:
+  #   build:
+  #     context: services/auth
+  #     dockerfile: WebApi/Dockerfile
+  #   environment:
+  #     <<: *common-variables
+  #   networks:
+  #     - dm-network
+  #   depends_on:
+  #     - rabbitmq
+  #   restart: always
+
+  # decks-api:
+  #   build:
+  #     context: services/decks
+  #     dockerfile: WebApi/Dockerfile
+  #   environment:
+  #     <<: *common-variables
+  #   networks:
+  #     - dm-network
+  #   depends_on:
+  #     - rabbitmq
+  #   restart: always
+
+  # decks-console-app:
+  #   build:
+  #     context: services/decks
+  #     dockerfile: ConsoleApp/Dockerfile
+  #   environment:
+  #     <<: *common-variables
+  #   networks:
+  #     - dm-network
+  #   depends_on:
+  #     - rabbitmq
+  #     - postgresql
+  #   volumes:
+  #   # mount files folder
+  #     - ./files:/app/files
+  #   restart: always
+
+  subscribers-api:
     build:
-      context: services/users
+      context: services/subscribers
       dockerfile: WebApi/Dockerfile
     environment:
       <<: *common-variables
@@ -49,33 +102,9 @@ services:
       - rabbitmq
     restart: always
 
-  auth-api:
+  subscribers-console-app:
     build:
-      context: services/auth
-      dockerfile: WebApi/Dockerfile
-    environment:
-      <<: *common-variables
-    networks:
-      - dm-network
-    depends_on:
-      - rabbitmq
-    restart: always
-
-  decks-api:
-    build:
-      context: services/decks
-      dockerfile: WebApi/Dockerfile
-    environment:
-      <<: *common-variables
-    networks:
-      - dm-network
-    depends_on:
-      - rabbitmq
-    restart: always
-
-  decks-console-app:
-    build:
-      context: services/decks
+      context: services/subscribers
       dockerfile: ConsoleApp/Dockerfile
     environment:
       <<: *common-variables

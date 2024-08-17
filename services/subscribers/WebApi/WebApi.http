@@ -1,6 +1,8 @@
-@WebApi_HostAddress = http://localhost:5152
+@WebApi_HostAddress = http://localhost:8080
 
-GET {{WebApi_HostAddress}}/weatherforecast/
+POST {{WebApi_HostAddress}}/subscribers
 Accept: application/json
+Content-Type: application/json
 
+{ "email": "elia.lombardi@outlook.it"}
 ###

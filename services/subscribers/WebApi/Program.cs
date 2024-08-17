@@ -15,25 +15,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<EmailDbContext>(options =>
+builder.Services.AddDbContext<SubscribersDbContext>(options =>
 {
-    // options.UseInMemoryDatabase("Decks");
-    // Use postgresql
-    var connectionString = builder.Configuration.GetConnectionString("emails");
-    options.UseNpgsql(connectionString, m =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("subscribers"), m =>
     {
         m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
-        m.MigrationsHistoryTable($"__{nameof(EmailDbContext)}");
-    });
+        m.MigrationsHistoryTable($"__{nameof(SubscribersDbContext)}");
+    })
+    .UseSnakeCaseNamingConvention();
 });
 
 builder.Services.AddMassTransit(x =>
    {
-       //    x.UsingInMemory((context, cfg) =>
-       //     {
-       //         cfg.ConfigureEndpoints(context);
-       //     });
-
        x.UsingRabbitMq((context, cfg) =>
         {
             var configuration = context.GetRequiredService<IConfiguration>();
@@ -75,29 +68,15 @@ builder.Services.RegisterRequestHandlers(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-static void ApplyMigrations(IHost host)
-{
-    // Log.Logger.Information("Applying migrations");
-    using var scope = host.Services.CreateScope();
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<EmailDbContext>();
-    context.Database.Migrate();
-    // Log.Logger.Information("Migrations applied");
-}
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
-    ApplyMigrations(app);
-
 }
 
 app.UseHttpsRedirection();
 
-app.UseHealthChecks("/users/health");
+app.UseHealthChecks("/susbscribers/health");
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -36,7 +36,7 @@ namespace Api.Features.Subscriber.Sagas
       During(Welcoming,
           When(WelcomeEmailSent)
               .Then(context => context.Saga.WelcomeEmailSent = true)
-              .TransitionTo(Onboarding)
+              .TransitionTo(FollowingUp)
               .Publish(context => new SendFollowUpEmailMessage(context.Message.SubscriberId, context.Message.Email))
       );
 
@@ -44,7 +44,7 @@ namespace Api.Features.Subscriber.Sagas
           When(FollowUpEmailSent)
               .Then(context => context.Saga.FollowUpEmailSent = true)
               .TransitionTo(Onboarding)
-              .Publish(context => new SendFollowUpEmailMessage(context.Message.SubscriberId, context.Message.Email))
+              .Publish(context => new OnboardingCompletedMessage(context.Message.SubscriberId, context.Message.Email))
               .Finalize()
       );
     }

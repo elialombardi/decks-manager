@@ -3,20 +3,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MassTransit;
 using Api.Features.Subscriber.Events;
+using WebApi.Dto;
+using Api.Features.Subscriber.Messages;
 
 namespace WebApi.Controllers;
 
 [Route("[controller]")]
-public class SubscribersControler(ILogger<SubscribersControler> logger, IPublishEndpoint bus) : ControllerBase
+public class SubscribersController(ILogger<SubscribersController> logger, IPublishEndpoint bus) : ControllerBase
 {
   [HttpPost("")]
   [AllowAnonymous]
-  public async Task<ActionResult> Post([FromBody] string email)
+  public async Task<ActionResult> Post([FromBody] PostSubscriberData data)
   {
-    logger.LogInformation("Creating subscriber with email {Email}", email);
+    logger.LogInformation("Creating subscriber with email {Email}", data.Email);
 
-    await bus.Publish(new SubscriberCreated() { Email = email });
+    await bus.Publish(new SubscribeToNewsletterMessage(data.Email));
 
-    return Ok(email);
+    return Ok();
   }
 }

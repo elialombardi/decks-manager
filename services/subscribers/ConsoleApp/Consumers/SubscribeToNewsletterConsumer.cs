@@ -1,18 +1,19 @@
 using Api.Features.Subscriber.Commands;
 using Api.Features.Subscriber.Events;
+using Api.Features.Subscriber.Messages;
 using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace ConsoleApp.Consumers;
 
-public class SubcribeToNewsletterConsumer(ILogger<SubcribeToNewsletterConsumer> logger, ISender sender) : IConsumer<SubscribeToNewsletter>
+public class SubcribeToNewsletterConsumer(ILogger<SubcribeToNewsletterConsumer> logger, ISender sender) : IConsumer<SubscribeToNewsletterMessage>
 {
-  public async Task Consume(ConsumeContext<SubscribeToNewsletter> context)
+  public async Task Consume(ConsumeContext<SubscribeToNewsletterMessage> context)
   {
     var message = context.Message;
 
-    var subscriber = await sender.Send(message);
+    var subscriber = await sender.Send(new SubscriberCreate(message.Email));
 
     if (subscriber is null)
     {
