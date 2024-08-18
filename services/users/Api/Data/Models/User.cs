@@ -1,3 +1,11 @@
 namespace Api.Data.Models;
 
-public record User(Guid UserID, string? Username, string Email, DateTime CreatedAt, DateTime UpdatedAt, DateTime? DeletedAt);
+public class User
+{
+  public Guid UserID { get; set; }
+  public string? Username { get; set; }
+  public required string Email { get; set; }
+  public DateTime CreatedAt { get; set; }
+  public DateTime UpdatedAt { get; set; }
+  public DateTime? DeletedAt { get; set; }
+}

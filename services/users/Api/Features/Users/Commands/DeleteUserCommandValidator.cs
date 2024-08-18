@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace Api.Features.Users.Commands
 {
-  public class DeleteUserCommandValidator : AbstractValidator<DeleteUserCommand>
+  public class DeleteUserCommandValidator : AbstractValidator<DeleteUserCommandRequest>
   {
     public DeleteUserCommandValidator()
     {

@@ -30,11 +30,6 @@ builder.Services.AddDbContext<UsersDbContext>(options =>
 
 builder.Services.AddMassTransit(x =>
    {
-     //    x.UsingInMemory((context, cfg) =>
-     //     {
-     //         cfg.ConfigureEndpoints(context);
-     //     });
-
      x.UsingRabbitMq((context, cfg) =>
       {
         var configuration = context.GetRequiredService<IConfiguration>();
@@ -44,6 +39,8 @@ builder.Services.AddMassTransit(x =>
              h.Password(configuration.GetValue<string>("rabbitMQ:password") ?? string.Empty);
            });
       });
+
+     x.RegisterRequestsClients();
    });
 
 

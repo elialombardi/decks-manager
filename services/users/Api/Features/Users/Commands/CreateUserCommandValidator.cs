@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features.Users.Commands
 {
-  public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
+  public class CreateUserCommandValidator : AbstractValidator<CreateUserCommandRequest>
   {
     private readonly UsersDbContext _context;
 
@@ -28,7 +28,7 @@ namespace Api.Features.Users.Commands
       return isUnique;
     }
 
-    private async Task<bool> BeUniqueUserName(string username, CancellationToken cancellationToken)
+    private async Task<bool> BeUniqueUserName(string? username, CancellationToken cancellationToken)
     {
       var isUnique = await _context.Users.AllAsync(u => u.Username != username, cancellationToken);
       return isUnique;
