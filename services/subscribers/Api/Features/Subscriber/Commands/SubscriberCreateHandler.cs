@@ -4,7 +4,6 @@ namespace Api.Features.Subscriber.Commands
 {
   public class SubscriberCreateHandler(SubscribersDbContext dbContext) : IRequestHandler<SubscriberCreate, Models.Subscriber?>
   {
-
     public async Task<Models.Subscriber?> Handle(SubscriberCreate request, CancellationToken cancellationToken)
     {
       var subscriber = new Models.Subscriber

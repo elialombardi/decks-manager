@@ -1,14 +1,13 @@
-using Api.Features.Subscriber.Events;
-using Api.Features.Subscriber.Messages;
+using Api.Events;
 using ConsoleApp.Services;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace ConsoleApp.Consumers;
 
-public class SendWelcomeEmailConsumer(ILogger<SendWelcomeEmailConsumer> logger, IEmailService emailService) : IConsumer<SendWelcomeEmailMessage>
+public class SendWelcomeEmailConsumer(ILogger<SendWelcomeEmailConsumer> logger, IEmailService emailService) : IConsumer<SendWelcomeEmail>
 {
-  public async Task Consume(ConsumeContext<SendWelcomeEmailMessage> context)
+  public async Task Consume(ConsumeContext<SendWelcomeEmail> context)
   {
     logger.LogInformation("SendWelcomeEmailMessage for {Email}", context.Message.Email);
 

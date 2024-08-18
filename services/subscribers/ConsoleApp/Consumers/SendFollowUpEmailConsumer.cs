@@ -1,14 +1,13 @@
-using Api.Features.Subscriber.Events;
-using Api.Features.Subscriber.Messages;
+using Api.Events;
 using ConsoleApp.Services;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace ConsoleApp.Consumers;
 
-public class SendFollowUpEmailConsumer(ILogger<SendFollowUpEmailConsumer> logger, IEmailService emailService) : IConsumer<SendFollowUpEmailMessage>
+public class SendFollowUpEmailConsumer(ILogger<SendFollowUpEmailConsumer> logger, IEmailService emailService) : IConsumer<SendFollowUpEmail>
 {
-  public async Task Consume(ConsumeContext<SendFollowUpEmailMessage> context)
+  public async Task Consume(ConsumeContext<SendFollowUpEmail> context)
   {
     logger.LogInformation("SendFollowUpEmailMessage for {Email}", context.Message.Email);
 

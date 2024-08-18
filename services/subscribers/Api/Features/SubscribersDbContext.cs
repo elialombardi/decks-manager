@@ -1,4 +1,4 @@
-using Api.Features.Subscriber.Sagas;
+using Api.Sagas;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features

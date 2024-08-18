@@ -1,7 +1,7 @@
 ﻿
 using System.Reflection;
 using Api.Features;
-using Api.Features.Subscriber.Sagas;
+using Api.Sagas;
 using ConsoleApp.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;

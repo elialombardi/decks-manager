@@ -1,5 +1,9 @@
-namespace Api.Features.Subscriber.Events
+using MassTransit;
+
+namespace Api.Events
 {
+  [EntityName(nameof(WelcomeEmailSent))]
+  [MessageUrn(nameof(WelcomeEmailSent))]
   public class WelcomeEmailSent
   {
     public Guid SubscriberId { get; set; }

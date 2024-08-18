@@ -1,6 +1,7 @@
+using Api.Sagas;
 using MassTransit;
 
-namespace Api.Features.Subscriber.Sagas
+namespace Api.Sagas
 {
   public class NewsletterOnboardingSagaDataDefinition : SagaDefinition<NewsletterOnboardingSagaData>
   {

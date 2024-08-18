@@ -1,8 +1,7 @@
-using Api.Features.Subscriber.Events;
-using Api.Features.Subscriber.Messages;
+using Api.Events;
 using MassTransit;
 
-namespace Api.Features.Subscriber.Sagas
+namespace Api.Sagas
 {
   public class NewsletterOnboardingSaga : MassTransitStateMachine<NewsletterOnboardingSagaData>
   {
@@ -30,21 +29,25 @@ namespace Api.Features.Subscriber.Sagas
                 context.Saga.Email = context.Message.Email;
               })
               .TransitionTo(Welcoming)
-              .Publish(context => new SendWelcomeEmailMessage(context.Message.SubscriberId, context.Message.Email))
+              .Publish(context => new SendWelcomeEmail(context.Message.SubscriberId, context.Message.Email))
       );
 
       During(Welcoming,
           When(WelcomeEmailSent)
               .Then(context => context.Saga.WelcomeEmailSent = true)
               .TransitionTo(FollowingUp)
-              .Publish(context => new SendFollowUpEmailMessage(context.Message.SubscriberId, context.Message.Email))
+              .Publish(context => new SendFollowUpEmail(context.Message.SubscriberId, context.Message.Email))
       );
 
       During(FollowingUp,
           When(FollowUpEmailSent)
-              .Then(context => context.Saga.FollowUpEmailSent = true)
+              .Then(context =>
+              {
+                context.Saga.FollowUpEmailSent = true;
+                context.Saga.OnboardingCompleted = true;
+              })
               .TransitionTo(Onboarding)
-              .Publish(context => new OnboardingCompletedMessage(context.Message.SubscriberId, context.Message.Email))
+              .Publish(context => new CompleteOnboarding(context.Message.SubscriberId, context.Message.Email))
               .Finalize()
       );
     }

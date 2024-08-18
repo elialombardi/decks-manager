@@ -1,6 +1,6 @@
 using MassTransit;
 
-namespace Api.Features.Subscriber.Sagas
+namespace Api.Sagas
 {
     public class NewsletterOnboardingSagaData : SagaStateMachineInstance
     {

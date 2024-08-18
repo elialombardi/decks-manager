@@ -1,12 +1,12 @@
-using Api.Features.Subscriber.Messages;
+using Api.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace ConsoleApp.Consumers;
 
-public class OnboardingCompletedConsumer(ILogger<OnboardingCompletedConsumer> logger) : IConsumer<OnboardingCompletedMessage>
+public class OnboardingCompletedConsumer(ILogger<OnboardingCompletedConsumer> logger) : IConsumer<CompleteOnboarding>
 {
-  public Task Consume(ConsumeContext<OnboardingCompletedMessage> context)
+  public Task Consume(ConsumeContext<CompleteOnboarding> context)
   {
     logger.LogInformation("OnboardingCompletedMessage for {Email}", context.Message.Email);
 
