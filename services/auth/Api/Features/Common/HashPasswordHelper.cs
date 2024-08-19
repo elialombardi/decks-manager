@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace Api.Application.Common
+namespace Api.Features.Common
 {
   public class HashPasswordHelper()
   {

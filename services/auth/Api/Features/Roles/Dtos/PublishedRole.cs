@@ -2,7 +2,7 @@ using Api.Data.Models;
 using AutoMapper;
 using MassTransit;
 
-namespace Api.Application.Roles.Dtos
+namespace Api.Features.Roles.Dtos
 {
   [EntityName("role")]
   [MessageUrn("role")]

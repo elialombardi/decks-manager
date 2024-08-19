@@ -49,13 +49,8 @@ builder.Services.AddMassTransit(x =>
 {
   x.AddDelayedMessageScheduler();
 
-  x.AddConsumers(Assembly.GetExecutingAssembly());
-  // x.AddJobSagaStateMachines(options => options.FinalizeCompleted = false)
-  //     .EntityFrameworkRepository(r =>
-  //     {
-  //       r.ExistingDbContext<JobServiceSagaDbContext>();
-  //       r.UsePostgres();
-  //     });
+  x.RegisterRequestsConsumers()
+    .SetEndpointNameFormatter(KebabCaseEndpointNameFormatter.Instance);
 
   x.SetKebabCaseEndpointNameFormatter();
 

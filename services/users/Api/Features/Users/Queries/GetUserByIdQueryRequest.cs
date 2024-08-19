@@ -1,4 +1,6 @@
-namespace Api.Application.Users.Queries
+using MassTransit;
+
+namespace Api.Features.Users.Queries
 {
   public record GetUserByIdQueryRequest(Guid Id);
 }

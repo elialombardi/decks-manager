@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Api.Data;
 using MassTransit;
+using Api.Features.Users.Queries;
 
-namespace Api.Application.Users.Queries
+namespace Api.Features.Users.Queries
 {
     public class GetUserByIdQueryConsumer(UsersDbContext dbContext) : IConsumer<GetUserByIdQueryRequest>
     {

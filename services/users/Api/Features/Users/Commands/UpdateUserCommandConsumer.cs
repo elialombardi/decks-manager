@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features.Users.Commands
 {
-  public class UpdateUserCommandHandler(UsersDbContext dbContext) : IConsumer<UpdateUserCommandRequest>
+  public class UpdateUserCommandConsumer(UsersDbContext dbContext) : IConsumer<UpdateUserCommandRequest>
   {
     public async Task Consume(ConsumeContext<UpdateUserCommandRequest> context)
     {

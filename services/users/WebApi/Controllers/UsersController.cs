@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Api.Features.Users.Commands;
 using WebApi.Services;
-using Api.Application.Users.Queries;
 using Microsoft.AspNetCore.Authorization;
-using Api.Application.Users.Publishers;
+using Api.Features.Users.Publishers;
 using MassTransit;
+using Api.Features.Users.Queries;
 
 namespace WebApi.Controllers;
 
@@ -18,10 +18,7 @@ public class UsersController(ILogger<UsersController> logger, IScopedClientFacto
   {
     logger.LogDebug("Getting user {UserID}", id);
 
-    // var user = await sender.Send(new GetUserByIdQuery(Guid.Parse(id)));
-
-    var serviceAddress = new Uri("queue:get-order-status"); // Replace with your actual queue address
-    var client = clientFactory.CreateRequestClient<GetUserByIdQueryRequest>(serviceAddress);
+    var client = clientFactory.CreateRequestClient<GetUserByIdQueryRequest>();
 
     var request = new GetUserByIdQueryRequest(Guid.Parse(id));
 
@@ -35,8 +32,7 @@ public class UsersController(ILogger<UsersController> logger, IScopedClientFacto
   [Authorize]
   public async Task<IActionResult> GetCurrentUser(string id)
   {
-    var serviceAddress = new Uri("queue:get-order-status"); // Replace with your actual queue address
-    var client = clientFactory.CreateRequestClient<GetUserByIdQueryRequest>(serviceAddress);
+    var client = clientFactory.CreateRequestClient<GetUserByIdQueryRequest>();
 
     var request = new GetUserByIdQueryRequest(Guid.Parse(authService.GetUserId()));
 
@@ -48,8 +44,7 @@ public class UsersController(ILogger<UsersController> logger, IScopedClientFacto
   [Authorize]
   public async Task<IActionResult> Search([FromBody] SearchUsersQueryRequest command)
   {
-    var serviceAddress = new Uri("queue:get-order-status"); // Replace with your actual queue address
-    var client = clientFactory.CreateRequestClient<SearchUsersQueryRequest>(serviceAddress);
+    var client = clientFactory.CreateRequestClient<SearchUsersQueryRequest>();
 
     var response = await client.GetResponse<SearchUsersQueryResponse>(command);
     return Ok(response.Message.Users);
@@ -59,8 +54,7 @@ public class UsersController(ILogger<UsersController> logger, IScopedClientFacto
   [Authorize(Roles = "microservice,admin")]
   public async Task<ActionResult> Post([FromBody] CreateUserCommandRequest command)
   {
-    var serviceAddress = new Uri("queue:get-order-status"); // Replace with your actual queue address
-    var client = clientFactory.CreateRequestClient<CreateUserCommandRequest>(serviceAddress);
+    var client = clientFactory.CreateRequestClient<CreateUserCommandRequest>();
 
 
     var response = await client.GetResponse<CreateUserCommandResponse>(command);
@@ -70,8 +64,7 @@ public class UsersController(ILogger<UsersController> logger, IScopedClientFacto
   [Authorize]
   public async Task<ActionResult> Put([FromBody] UpdateUserCommandRequest command)
   {
-    var serviceAddress = new Uri("queue:get-order-status"); // Replace with your actual queue address
-    var client = clientFactory.CreateRequestClient<UpdateUserCommandRequest>(serviceAddress);
+    var client = clientFactory.CreateRequestClient<UpdateUserCommandRequest>();
 
     var response = await client.GetResponse<GetUserByIdQueryResponse>(command);
     return response.Message.User == null ? NotFound() : Ok(response.Message.User);
@@ -81,8 +74,7 @@ public class UsersController(ILogger<UsersController> logger, IScopedClientFacto
   [Authorize(Roles = "admin")]
   public async Task<ActionResult> Delete(string id)
   {
-    var serviceAddress = new Uri("queue:get-order-status"); // Replace with your actual queue address
-    var client = clientFactory.CreateRequestClient<UpdateUserCommandRequest>(serviceAddress);
+    var client = clientFactory.CreateRequestClient<UpdateUserCommandRequest>();
     var request = new DeleteUserCommandRequest(id);
 
     var response = await client.GetResponse<GetUserByIdQueryResponse>(request);

@@ -1,10 +1,9 @@
 
-using Api.Application.Common;
-using Api.Application.Roles.Publishers;
 using Api.Features.Auths.Commands;
+using Api.Features.Roles.Publishers;
 using Api.Proxies;
 using FluentValidation;
-using MediatR;
+using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
@@ -17,11 +16,6 @@ public static class Dependencies
   {
 
     services.AddValidatorsFromAssembly(typeof(Dependencies).Assembly);
-
-    services
-        .AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(Dependencies).Assembly));
-
-    services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
     services.AddAutoMapper(typeof(Dependencies).Assembly);
 
@@ -49,5 +43,31 @@ public static class Dependencies
     return HttpPolicyExtensions
         .HandleTransientHttpError()
         .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
+  }
+
+  public static IBusRegistrationConfigurator RegisterRequestsClients(
+     this IBusRegistrationConfigurator brc)
+  {
+    brc.AddRequestClient<CreateAuthCommandRequest>(new Uri($"queue:{nameof(CreateAuthCommandRequest)}"));
+    brc.AddRequestClient<DeleteAuthCommandRequest>(new Uri($"queue:{nameof(DeleteAuthCommandRequest)}"));
+    brc.AddRequestClient<LoginCommandRequest>(new Uri($"queue:{nameof(LoginCommandRequest)}"));
+    brc.AddRequestClient<UpdateAuthCommandRequest>(new Uri($"queue:{nameof(UpdateAuthCommandRequest)}"));
+
+    return brc;
+  }
+
+  public static IBusRegistrationConfigurator RegisterRequestsConsumers(
+    this IBusRegistrationConfigurator brc)
+  {
+    brc.AddConsumer<CreateAuthCommandConsumer>()
+        .Endpoint(e => e.Name = nameof(CreateAuthCommandRequest));
+    brc.AddConsumer<DeleteAuthCommandConsumer>()
+        .Endpoint(e => e.Name = nameof(DeleteAuthCommandRequest));
+    brc.AddConsumer<LoginCommandConsumer>()
+        .Endpoint(e => e.Name = nameof(LoginCommandRequest));
+    brc.AddConsumer<UpdateAuthCommandConsumer>()
+        .Endpoint(e => e.Name = nameof(UpdateAuthCommandRequest));
+
+    return brc;
   }
 }

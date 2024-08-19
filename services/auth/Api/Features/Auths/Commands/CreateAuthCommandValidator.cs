@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Features.Auths.Commands
 {
-  public class CreateAuthCommandValidator : AbstractValidator<CreateAuthCommand>
+  public class CreateAuthCommandValidator : AbstractValidator<CreateAuthCommandRequest>
   {
     private readonly AuthDbContext _context;
 

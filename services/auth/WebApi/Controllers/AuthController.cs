@@ -1,24 +1,28 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Api.Features.Auths.Commands;
 using Microsoft.AspNetCore.Authorization;
-using System.Diagnostics.CodeAnalysis;
 using WebApi.Services;
-using Api.Application.Common;
-using Api.Application.Roles.Queries;
-using Api.Application.Roles.Publishers;
+using Api.Features.Common;
+using Api.Features.Roles.Queries;
+using Api.Features.Roles.Publishers;
+using MassTransit;
 
 namespace WebApi.Controllers;
 
 [Route("auth")]
-public class AuthController(ILogger<AuthController> logger, ISender sender, IAuthService authService, IRolePublisher rolePublisher, IConfiguration configuration) : ControllerBase
+public class AuthController(ILogger<AuthController> logger, IScopedClientFactory clientFactory, IAuthService authService, IRolePublisher rolePublisher, IConfiguration configuration) : ControllerBase
 {
 
   [HttpPost("login")]
   [AllowAnonymous]
-  public async Task<IActionResult> Login([FromBody] LoginCommand command)
+  public async Task<IActionResult> Login([FromBody] LoginCommandRequest command)
   {
-    var auth = await sender.Send(command);
+
+    var client = clientFactory.CreateRequestClient<LoginCommandRequest>();
+
+    var response = await client.GetResponse<LoginCommandResponse>(command);
+    var auth = response.Message.Auth;
+
     if (auth == null)
     {
       return NotFound();
@@ -33,7 +37,7 @@ public class AuthController(ILogger<AuthController> logger, ISender sender, IAut
 
   [HttpPost("signup")]
   [AllowAnonymous]
-  public async Task<IActionResult> Signup([FromBody] CreateAuthCommand command)
+  public async Task<IActionResult> Signup([FromBody] CreateAuthCommandRequest command)
   {
     // If is external user signin up, set role to user
     if (HttpContext.User?.Identity == null || !HttpContext.User.Identity.IsAuthenticated || !HttpContext.User.IsInRole(Roles.Admin.ToString().ToLowerInvariant()))
@@ -41,7 +45,11 @@ public class AuthController(ILogger<AuthController> logger, ISender sender, IAut
       command = command with { RoleID = Convert.ToByte(Roles.User) };
     }
 
-    var auth = await sender.Send(command);
+    var client = clientFactory.CreateRequestClient<CreateAuthCommandRequest>();
+
+    var response = await client.GetResponse<CreateAuthCommandResponse>(command);
+    var auth = response.Message.Auth;
+
     if (auth == null)
     {
       return NotFound();
@@ -56,9 +64,11 @@ public class AuthController(ILogger<AuthController> logger, ISender sender, IAut
   [AllowAnonymous]
   public async Task<IActionResult> GetRoles()
   {
-    var roles = await sender.Send(new SearchRolesQuery());
+    var client = clientFactory.CreateRequestClient<SearchRolesQueryRequest>();
 
-    return Ok(roles);
+    var response = await client.GetResponse<SearchRolesQueryResponse>(new SearchRolesQueryRequest());
+
+    return Ok(response.Message.Roles);
   }
 
   [HttpPost("roles")]
@@ -82,7 +92,13 @@ public class AuthController(ILogger<AuthController> logger, ISender sender, IAut
       return NotFound();
     }
 
-    var auth = await sender.Send(new CreateAuthCommand("elia.lombardi@outlook.it", "Test.123", Convert.ToByte(Roles.Admin)));
+    var command = new CreateAuthCommandRequest("elia.lombardi@outlook.it", "Test.123", Convert.ToByte(Roles.Admin));
+
+    var client = clientFactory.CreateRequestClient<CreateAuthCommandRequest>();
+
+    var response = await client.GetResponse<CreateAuthCommandResponse>(command);
+    var auth = response.Message.Auth;
+
     if (auth == null)
     {
       return NotFound();

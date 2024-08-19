@@ -1,4 +1,4 @@
-namespace Api.Application.Common
+namespace Api.Features.Common
 {
   public enum Roles
   {

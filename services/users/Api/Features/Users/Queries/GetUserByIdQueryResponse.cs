@@ -1,6 +1,6 @@
 using Api.Data.Models;
 
-namespace Api.Application.Users.Queries
+namespace Api.Features.Users.Queries
 {
   public record GetUserByIdQueryResponse(User? User);
 }

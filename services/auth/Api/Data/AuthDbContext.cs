@@ -22,8 +22,8 @@ public class AuthDbContext : DbContext
     if (!context.Roles.Any())
     {
       // Seed data
-      context.Roles.AddRangeAsync(Enum.GetValues(typeof(Application.Common.Roles))
-              .Cast<Application.Common.Roles>()
+      context.Roles.AddRangeAsync(Enum.GetValues(typeof(Features.Common.Roles))
+              .Cast<Features.Common.Roles>()
               .Select(e => new Role(Convert.ToByte(e), e.ToString())));
 
       context.SaveChanges();

@@ -1,8 +1,8 @@
-using Api.Application.Users.Dtos;
+using Api.Features.Users.Dtos;
 using Api.Data.Models;
 using AutoMapper;
 
-namespace Api.Application.Common
+namespace Api.Features.Common
 {
   public class AutomapperProfile : Profile
   {

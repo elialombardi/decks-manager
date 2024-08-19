@@ -1,6 +1,6 @@
 using Api.Data.Models;
 
-namespace Api.Application.Roles.Publishers
+namespace Api.Features.Roles.Publishers
 {
   public interface IRolePublisher
   {

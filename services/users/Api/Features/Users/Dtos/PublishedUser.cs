@@ -1,6 +1,6 @@
 using MassTransit;
 
-namespace Api.Application.Users.Dtos
+namespace Api.Features.Users.Dtos
 {
   [EntityName("user")]
   [MessageUrn("user")]

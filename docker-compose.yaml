@@ -38,42 +38,43 @@ services:
       - subscribers-api
       # - games-api
 
-  # users-api:
-  #   build:
-  #     context: services/users
-  #     dockerfile: WebApi/Dockerfile
-  #   environment:
-  #     <<: *common-variables
-  #   networks:
-  #     - dm-network
-  #   depends_on:
-  #     - rabbitmq
-  #   restart: always
+  users-api:
+    build:
+      context: services/users
+      dockerfile: WebApi/Dockerfile
+    environment:
+      <<: *common-variables
+    networks:
+      - dm-network
+    depends_on:
+      - rabbitmq
+    restart: always
 
-  # auth-api:
-  #   build:
-  #     context: services/auth
-  #     dockerfile: WebApi/Dockerfile
-  #   environment:
-  #     <<: *common-variables
-  #   networks:
-  #     - dm-network
-  #   depends_on:
-  #     - rabbitmq
-  #   restart: always
+  auth-api:
+    build:
+      context: services/auth
+      dockerfile: WebApi/Dockerfile
+    environment:
+      <<: *common-variables
+    networks:
+      - dm-network
+    depends_on:
+      - rabbitmq
+    restart: always
 
-  # decks-api:
-  #   build:
-  #     context: services/decks
-  #     dockerfile: WebApi/Dockerfile
-  #   environment:
-  #     <<: *common-variables
-  #   networks:
-  #     - dm-network
-  #   depends_on:
-  #     - rabbitmq
-  #   restart: always
+  decks-api:
+    build:
+      context: services/decks
+      dockerfile: WebApi/Dockerfile
+    environment:
+      <<: *common-variables
+    networks:
+      - dm-network
+    depends_on:
+      - rabbitmq
+    restart: always
 
+  # Deck export file is missing
   # decks-console-app:
   #   build:
   #     context: services/decks

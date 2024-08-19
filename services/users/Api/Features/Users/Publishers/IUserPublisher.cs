@@ -1,6 +1,6 @@
 using Api.Data.Models;
 
-namespace Api.Application.Users.Publishers
+namespace Api.Features.Users.Publishers
 {
   public interface IUserPublisher
   {

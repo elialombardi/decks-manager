@@ -36,6 +36,9 @@ builder.Services.AddMassTransit(x =>
              h.Password(configuration.GetValue<string?>("rabbitMQ:password") ?? string.Empty);
            });
       });
+
+     x.RegisterRequestsClients();
+     x.RegisterRequestsConsumers();
    });
 
 

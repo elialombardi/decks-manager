@@ -4,7 +4,7 @@ using MassTransit;
 
 namespace Api.Features.Users.Commands
 {
-  public class CreateUserCommandHandler(UsersDbContext dbContext) : IConsumer<CreateUserCommandRequest>
+  public class CreateUserCommandConsumer(UsersDbContext dbContext) : IConsumer<CreateUserCommandRequest>
   {
     public async Task Consume(ConsumeContext<CreateUserCommandRequest> context)
     {
